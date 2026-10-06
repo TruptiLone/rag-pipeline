@@ -80,3 +80,16 @@ def chunk_fixed_size(text, chunk_size):
         for start in range(0, len(text), chunk_size)
     ]
 
+# Step 7 - chunk_by_tokens
+def chunk_by_tokens(text, tokenizer, max_tokens):
+    # TODO: split text into chunks of at most max_tokens token ids using the tokenizer
+    if max_tokens <= 0:
+        raise ValueError("max_tokens must be positive")
+
+    token_ids = tokenizer.encode(text, add_special_tokens=False)
+
+    return [
+        tokenizer.decode(token_ids[start:start + max_tokens])
+        for start in range(0, len(token_ids), max_tokens)
+    ]
+
