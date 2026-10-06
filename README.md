@@ -38,6 +38,7 @@ python scaffold.py
 - [x] **26.** truncate_context
 - [x] **27.** add_system_instruction
 - [x] **28.** load_generator
+- [x] **29.** generate_answer
 
 ---
 
