@@ -382,3 +382,21 @@ def add_system_instruction(prompt):
     )
     return instruction + "\n\n" + prompt
 
+# Step 28 - load_generator
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+def load_generator(model_name='sshleifer/tiny-gpt2'):
+    # TODO: load a small local causal LM and its tokenizer, ensuring tokenizer.pad_token is set.
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModelForCausalLM.from_pretrained(model_name)
+
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    tokenizer.padding_side = "left"
+    model.config.pad_token_id = tokenizer.pad_token_id
+    model.generation_config.pad_token_id = tokenizer.pad_token_id
+    model.eval()
+
+    return model, tokenizer
+
