@@ -53,6 +53,8 @@ def extract_text_from_html(html):
     return "".join(parser.parts)
 
 # Step 4 - normalize_text
+import unicodedata
+
 def normalize_text(text):
     # TODO: NFKC-normalize the text and collapse runs of whitespace into single spaces.
     normalized = unicodedata.normalize("NFKC", text)
