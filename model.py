@@ -575,3 +575,19 @@ def hybrid_search(query, chunks, embeddings, embed_model, alpha=0.5, k=5):
     indices = np.argsort(-combined, kind="stable")[:k]
     return [(int(i), float(combined[i])) for i in indices]
 
+# Step 38 - rerank_cross_encoder
+def rerank_cross_encoder(query, candidate_chunks, cross_encoder):
+    # TODO: score (query, chunk) pairs with cross_encoder and return chunks sorted by descending score
+    if not candidate_chunks:
+        return []
+
+    pairs = [(query, chunk["text"]) for chunk in candidate_chunks]
+    scores = cross_encoder.predict(pairs)
+
+    ranked = sorted(
+        zip(candidate_chunks, scores),
+        key=lambda item: float(item[1]),
+        reverse=True,
+    )
+    return [chunk for chunk, score in ranked]
+

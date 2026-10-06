@@ -47,6 +47,7 @@ python scaffold.py
 - [x] **35.** reciprocal_rank_fusion
 - [x] **36.** bm25_search
 - [x] **37.** hybrid_search
+- [x] **38.** rerank_cross_encoder
 
 ---
 
