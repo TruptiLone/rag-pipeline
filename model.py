@@ -186,3 +186,41 @@ def embed_chunks(model, chunks, batch_size=32):
     )
     return np.asarray(embeddings, dtype=np.float32)
 
+# Step 14 - l2_normalize
+import numpy as np
+
+def l2_normalize(matrix):
+    # TODO: rescale each row of `matrix` to unit L2 norm, leaving all-zero rows unchanged.
+    normalized = np.array(matrix, copy=True)
+    if not np.issubdtype(normalized.dtype, np.floating):
+        normalized = normalized.astype(float)
+
+    norms = np.linalg.norm(normalized, axis=1, keepdims=True)
+    np.divide(normalized, norms, out=normalized, where=norms != 0)
+    return normalized
+
+# Step 15 - save_corpus
+import json
+from pathlib import Path
+
+import numpy as np
+def save_corpus(embeddings, chunks, directory):
+    # TODO: persist embeddings (.npy) and chunks (.json) into directory, then reload and return both.
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+
+    embeddings_path = directory / "embeddings.npy"
+    chunks_path = directory / "chunks.json"
+
+    np.save(embeddings_path, embeddings, allow_pickle=False)
+    with chunks_path.open("w", encoding="utf-8") as file:
+        json.dump(chunks, file, ensure_ascii=False)
+
+    with chunks_path.open("r", encoding="utf-8") as file:
+        loaded_chunks = json.load(file)
+
+    return {
+        "embeddings": np.load(embeddings_path, allow_pickle=False),
+        "chunks": loaded_chunks,
+    }
+
