@@ -50,6 +50,8 @@ python scaffold.py
 - [x] **38.** rerank_cross_encoder
 - [x] **39.** maximal_marginal_relevance
 - [x] **40.** filter_by_metadata
+- [x] **41.** build_eval_set
+- [x] **42.** hit_rate_at_k
 
 ---
 

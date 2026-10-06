@@ -648,3 +648,40 @@ def filter_by_metadata(chunks, filter_dict):
         )
     ]
 
+# Step 41 - build_eval_set
+def build_eval_set():
+    return [
+        {
+            "question": "What is RAG?",
+            "answer": "Retrieval-Augmented Generation combines a retriever with a generator.",
+            "relevant_ids": ["c1", "c2"],
+        },
+        {
+            "question": "What does FAISS do?",
+            "answer": "FAISS performs fast nearest-neighbor search over dense vectors.",
+            "relevant_ids": ["c3"],
+        },
+        {
+            "question": "Why normalize embeddings?",
+            "answer": "So that inner products equal cosine similarities.",
+            "relevant_ids": ["c4", "c5"],
+        },
+        {
+            "question": "What is BM25?",
+            "answer": "A lexical ranking function based on term frequency and document length.",
+            "relevant_ids": ["c6"],
+        },
+    ]
+
+# Step 42 - hit_rate_at_k
+def hit_rate_at_k(retrieved_ids_per_query, relevant_ids_per_query, k):
+    # TODO: return the fraction of queries with at least one relevant id in the top-k retrieved
+    if not retrieved_ids or k <= 0:
+        return 0.0
+
+    hits = sum(
+        bool(set(retrieved[:k]) & set(relevant))
+        for retrieved, relevant in zip(retrieved_ids, relevant_ids)
+    )
+    return float(hits / len(retrieved_ids))
+
