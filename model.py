@@ -685,3 +685,40 @@ def hit_rate_at_k(retrieved_ids_per_query, relevant_ids_per_query, k):
     )
     return float(hits / len(retrieved_ids_per_query))
 
+# Step 43 - recall_at_k
+def recall_at_k(retrieved_ids_per_query, relevant_ids_per_query, k):
+    # TODO: average over queries the fraction of relevant ids found in the top-k retrieved ids
+    if not retrieved_ids_per_query or k <= 0:
+        return 0.0
+
+    total_recall = 0.0
+
+    for retrieved, relevant in zip(
+        retrieved_ids_per_query, relevant_ids_per_query
+    ):
+        gold = set(relevant)
+        if gold:
+            total_recall += len(set(retrieved[:k]) & gold) / len(gold)
+
+    return float(total_recall / len(retrieved_ids_per_query))
+
+# Step 44 - mean_reciprocal_rank
+def mean_reciprocal_rank(retrieved_ids_per_query, relevant_ids_per_query):
+    # TODO: average the reciprocal rank of the first relevant id across queries
+    if not retrieved_ids_per_query:
+        return 0.0
+
+    total = 0.0
+
+    for retrieved, relevant in zip(
+        retrieved_ids_per_query, relevant_ids_per_query
+    ):
+        gold = set(relevant)
+
+        for position, chunk_id in enumerate(retrieved, start=1):
+            if chunk_id in gold:
+                total += 1.0 / position
+                break
+
+    return float(total / len(retrieved_ids_per_query))
+
