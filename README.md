@@ -20,6 +20,7 @@ python scaffold.py
 - [x] **8.** chunk_by_sentences
 - [x] **9.** chunk_with_overlap
 - [x] **10.** attach_chunk_metadata
+- [x] **11.** load_embedding_model
 
 ---
 

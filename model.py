@@ -150,3 +150,10 @@ def attach_chunk_metadata(chunks, source):
         for position, chunk in enumerate(chunks)
     ]
 
+# Step 11 - load_embedding_model
+from sentence_transformers import SentenceTransformer
+
+def load_embedding_model(model_name):
+    # TODO: return a sentence-transformers model instance for the given model_name.
+    return SentenceTransformer(model_name)
+
