@@ -260,3 +260,10 @@ def top_k_chunks(scores, chunks, k):
     indices = top_k_indices(scores, min(k, len(chunks)))
     return [(chunks[i], float(scores[i])) for i in indices]
 
+# Step 19 - retrieve
+def retrieve(query, model, chunk_matrix, chunks, k):
+    # TODO: embed the query, score it against chunk_matrix, return top-k (chunk, score) pairs.
+    query_vector = embed_text(model, query)
+    scores = cosine_similarity_search(query_vector, chunk_matrix)
+    return top_k_chunks(scores, chunks, k)
+
