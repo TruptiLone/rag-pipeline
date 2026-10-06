@@ -46,6 +46,7 @@ python scaffold.py
 - [x] **34.** hyde_retrieve
 - [x] **35.** reciprocal_rank_fusion
 - [x] **36.** bm25_search
+- [x] **37.** hybrid_search
 
 ---
 

@@ -545,3 +545,33 @@ def bm25_search(query, chunks, k=5, k1=1.5, b=0.75):
         results.append((index, float(score)))
     return sorted(results, key=lambda item: item[1], reverse=True)[:k]
 
+# Step 37 - hybrid_search
+import numpy as np
+
+def hybrid_search(query, chunks, embeddings, embed_model, alpha=0.5, k=5):
+    # TODO: blend normalized dense cosine scores with BM25 scores and return the top-k (idx, score) pairs.
+    if not chunks or k <= 0:
+        return []
+
+    query_vector = embed_text(embed_model, query)
+    dense_scores = cosine_similarity_search(query_vector, embeddings)
+
+    lexical_scores = np.zeros(len(chunks), dtype=float)
+    for index, score in bm25_search(query, chunks, k=len(chunks)):
+        lexical_scores[index] = score
+
+    def min_max_scale(scores):
+        scores = np.asarray(scores, dtype=float)
+        span = scores.max() - scores.min()
+        if span == 0:
+            return np.zeros_like(scores)
+        return (scores - scores.min()) / span
+
+    combined = (
+        alpha * min_max_scale(dense_scores)
+        + (1 - alpha) * min_max_scale(lexical_scores)
+    )
+
+    indices = np.argsort(-combined, kind="stable")[:k]
+    return [(int(i), float(combined[i])) for i in indices]
+
