@@ -2,7 +2,7 @@
 
 This project searches a collection of technical documents to help answer questions with supporting passages. The included corpus contains **12 project-authored notes about retrieval-augmented generation (RAG)**: chunking, embeddings, cosine similarity, FAISS, BM25, hybrid retrieval, reranking, evaluation, grounding, persistence, and conversation memory. Each document is a UTF-8 text file; each searchable record is a chunk with text, a source, a position, and a stable `chunk_id`.
 
-The task is **document retrieval followed by text generation**, not classification or regression. A user supplies a question; the system retrieves passages and can pass them to a pretrained language model to produce an answer. The model is not trained from scratch. The current interface is a command-line application; a web frontend and backend service are planned extensions.
+A user supplies a question; the system retrieves passages and can pass them to a pretrained language model to produce an answer. The model is not trained from scratch. The current interface is a command-line application; a web frontend and backend service are planned extensions.
 
 ## RAG explained: design decisions, evaluation, and interview preparation
 
