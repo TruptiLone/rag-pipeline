@@ -741,8 +741,12 @@ def faithfulness_score(answer, context_chunks):
 # Step 46 - relevance_score
 def relevance_score(answer, question):
     # TODO: return token-overlap (Jaccard) similarity between answer and question in [0, 1]
-    answer_tokens = set(normalize_text(answer).lower().split())
-    question_tokens = set(normalize_text(question).lower().split())
+    answer_tokens = set(
+        re.findall(r"\w+", normalize_text(answer).lower())
+    )
+    question_tokens = set(
+        re.findall(r"\w+", normalize_text(question).lower())
+    )
 
     union = answer_tokens | question_tokens
     if not union:
