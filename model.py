@@ -164,3 +164,25 @@ def embed_text(model, text):
     # TODO: Return a 1D float32 numpy embedding vector for the given text string.
     return np.asarray(model.encode(text), dtype=np.float32).reshape(-1)
 
+# Step 13 - embed_chunks
+def embed_chunks(model, chunks, batch_size=32):
+    """Batch-embed a list of chunk strings or chunk dicts into a 2D float32 matrix."""
+    # TODO: normalize chunk inputs to strings, encode in batches, return (n, d) float32 array
+    texts = [
+        chunk["text"] if isinstance(chunk, dict) else chunk
+        for chunk in chunks
+    ]
+
+    if not texts:
+        return np.empty(
+            (0, model.get_sentence_embedding_dimension()),
+            dtype=np.float32,
+        )
+
+    embeddings = model.encode(
+        texts,
+        batch_size=batch_size,
+        convert_to_numpy=True,
+    )
+    return np.asarray(embeddings, dtype=np.float32)
+

@@ -22,6 +22,7 @@ python scaffold.py
 - [x] **10.** attach_chunk_metadata
 - [x] **11.** load_embedding_model
 - [x] **12.** embed_text
+- [x] **13.** embed_chunks
 
 ---
 
