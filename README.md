@@ -15,6 +15,7 @@ python scaffold.py
 - [x] **3.** extract_text_from_html
 - [x] **4.** normalize_text
 - [x] **5.** make_document
+- [x] **6.** chunk_fixed_size
 
 ---
 
