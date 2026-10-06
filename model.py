@@ -466,3 +466,20 @@ def append_source_references(answer_text, source_chunks):
     references = ", ".join(str(chunk_id) for chunk_id in ids)
     return f"{answer_text}\nSources: [{references}]"
 
+# Step 33 - query_rewrite
+def query_rewrite(raw_query):
+    # TODO: clean and normalize a raw user query into a better search query
+    query = normalize_text(raw_query).lower()
+
+    # Repeatedly remove prefixes to handle combinations like
+    # "please could you tell me".
+    filler = r"^(?:please|could you|can you|tell me|i want to know)\b[\s,]*"
+
+    while True:
+        cleaned = re.sub(filler, "", query)
+        if cleaned == query:
+            break
+        query = cleaned
+
+    return query.rstrip("?.! ").strip()
+
