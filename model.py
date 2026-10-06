@@ -792,3 +792,11 @@ def deduplicate_chunks(chunks, embeddings, similarity_threshold=0.95):
         embeddings[kept_indices],
     )
 
+# Step 49 - cache_query_embedding
+def cache_query_embedding(query, embed_model, cache):
+    # TODO: return the query's embedding, using cache to skip recomputation on repeats.
+    if query not in cache:
+        cache[query] = embed_text(embed_model, query)
+
+    return cache[query]
+

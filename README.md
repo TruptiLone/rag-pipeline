@@ -58,6 +58,7 @@ python scaffold.py
 - [x] **46.** relevance_score
 - [x] **47.** handle_no_context
 - [x] **48.** deduplicate_chunks
+- [x] **49.** cache_query_embedding
 
 ---
 
