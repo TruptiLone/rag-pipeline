@@ -284,13 +284,23 @@ import numpy as np
 def faiss_search(index, query_vector, k):
     """Return top-k (scores, indices) as 1D arrays for a single query vector."""
     # TODO: query the FAISS index with the single query vector and return flat top-k arrays
-    query = np.ascontiguousarray(query_vector, dtype=np.float32).reshape(1, -1)
-    scores, indices = index.search(query_vector, k)
+    query = np.ascontiguousarray(
+    query_vector, dtype=np.float32
+    ).reshape(1, -1)
 
-    return (
-        np.asarray(scores, dtype=np.float32).reshape(-1),
-        np.asarray(indices, dtype=np.int64).reshape(-1),
-    )
+    if index.ntotal == 0:
+        return (
+            np.empty(0, dtype=np.float32),
+            np.empty(0, dtype=np.int64),
+        )
+
+    scores, indices = index.search(query, index.ntotal)
+    scores = np.asarray(scores, dtype=np.float32).ravel()
+    indices = np.asarray(indices, dtype=np.int64).ravel()
+
+    # Highest score first; smallest index first for equal scores.
+    order = np.lexsort((indices, -scores))[:k]
+    return scores[order], indices[order]
 
 # Step 22 - compare_faiss_to_numpy
 import numpy as np
