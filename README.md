@@ -12,6 +12,8 @@ python scaffold.py
 
 - [x] **1.** load_text_file
 - [x] **2.** load_text_directory
+- [x] **3.** extract_text_from_html
+- [x] **4.** normalize_text
 
 ---
 
