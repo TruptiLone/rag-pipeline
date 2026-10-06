@@ -344,3 +344,40 @@ def build_prompt_template():
         "Answer:"
     )
 
+# Step 25 - format_context
+def format_context(retrieved):
+    # TODO: render each (chunk, score) as '[i] {text} (source={source})' and join with newlines
+    return "\n".join(
+        f"[{i}] {chunk['text']} (source={chunk['source']})"
+        for i, (chunk, score) in enumerate(retrieved, start=1)
+    )
+
+# Step 26 - truncate_context
+def truncate_context(context, max_chars):
+    # TODO: trim context so len(result) <= max_chars, preferring a whitespace boundary
+    if max_chars <= 0:
+        return ""
+    if len(context) <= max_chars:
+        return context
+
+    # Keep a complete word when the limit lands just before whitespace.
+    if context[max_chars].isspace():
+        return context[:max_chars].rstrip()
+
+    # Otherwise, cut at the last whitespace within the budget.
+    for i in range(max_chars - 1, -1, -1):
+        if context[i].isspace():
+            return context[:i].rstrip()
+
+    return context[:max_chars]
+
+# Step 27 - add_system_instruction
+def add_system_instruction(prompt):
+    """Prepend a fixed system instruction to the prompt."""
+    # TODO: return a string that starts with a system instruction telling the model to use only the context
+    instruction = (
+        "Answer only from the provided context. "
+        'If the context is insufficient, respond with exactly "I do not know".'
+    )
+    return instruction + "\n\n" + prompt
+
