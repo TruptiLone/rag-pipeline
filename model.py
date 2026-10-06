@@ -768,3 +768,27 @@ def handle_no_context(scored_chunks, threshold=0.2):
         "message": "" if has_context else "I do not know",
     }
 
+# Step 48 - deduplicate_chunks
+import numpy as np
+
+def deduplicate_chunks(chunks, embeddings, similarity_threshold=0.95):
+    embeddings = np.asarray(embeddings)
+
+    if not chunks:
+        return [], np.empty((0, 0), dtype=embeddings.dtype)
+
+    kept_indices = []
+
+    for i in range(len(chunks)):
+        if kept_indices:
+            similarities = embeddings[kept_indices] @ embeddings[i]
+            if np.any(similarities > similarity_threshold):
+                continue
+
+        kept_indices.append(i)
+
+    return (
+        [chunks[i] for i in kept_indices],
+        embeddings[kept_indices],
+    )
+
