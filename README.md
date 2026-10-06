@@ -17,6 +17,7 @@ python scaffold.py
 - [x] **5.** make_document
 - [x] **6.** chunk_fixed_size
 - [x] **7.** chunk_by_tokens
+- [x] **8.** chunk_by_sentences
 
 ---
 
