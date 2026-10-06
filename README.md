@@ -39,6 +39,7 @@ python scaffold.py
 - [x] **27.** add_system_instruction
 - [x] **28.** load_generator
 - [x] **29.** generate_answer
+- [x] **30.** rag_answer
 
 ---
 

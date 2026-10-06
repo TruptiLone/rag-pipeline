@@ -403,12 +403,21 @@ def load_generator(model_name='sshleifer/tiny-gpt2'):
 # Step 29 - generate_answer
 import torch
 
-def generate_answer(model, tokenizer, prompt, max_new_tokens=32):
-    # TODO: greedy-decode a continuation from `prompt` and return only the new tokens as a string.
-    torch.manual_seed(42)
-    model.eval()
 
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+def generate_answer(model, tokenizer, prompt, max_new_tokens=100):
+    torch.manual_seed(42)
+
+    if hasattr(model, "eval"):
+        model.eval()
+
+    inputs = tokenizer(prompt, return_tensors="pt")
+
+    if hasattr(model, "device"):
+        inputs = {
+            key: value.to(model.device)
+            for key, value in inputs.items()
+        }
+
     prompt_length = inputs["input_ids"].shape[1]
 
     with torch.no_grad():
@@ -419,6 +428,29 @@ def generate_answer(model, tokenizer, prompt, max_new_tokens=32):
             pad_token_id=tokenizer.pad_token_id,
         )
 
-    continuation = outputs[0, prompt_length:]
-    return tokenizer.decode(continuation, skip_special_tokens=True)
+    return tokenizer.decode(
+        outputs[0][prompt_length:],
+        skip_special_tokens=True,
+    )
+
+# Step 30 - rag_answer
+def rag_answer(query, chunks, embeddings, embed_model, generator, tokenizer, k=3):
+    # TODO: embed query, retrieve top-k chunks, build prompt, generate answer, return dict.
+    retrieved = retrieve(query, embed_model, embeddings, chunks, k)
+
+    prompt = build_prompt_template().format(
+        context=format_context(retrieved),
+        question=query,
+    )
+    prompt = add_system_instruction(prompt)
+
+    answer = generate_answer(
+        generator, tokenizer, prompt, max_new_tokens=100
+    )
+
+    return {
+        "answer": answer,
+        "sources": [chunk for chunk, score in retrieved],
+        "query": query,
+    }
 
