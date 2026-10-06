@@ -267,3 +267,59 @@ def retrieve(query, model, chunk_matrix, chunks, k):
     scores = cosine_similarity_search(query_vector, chunk_matrix)
     return top_k_chunks(scores, chunks, k)
 
+# Step 20 - build_faiss_index
+import faiss
+import numpy as np
+
+def build_faiss_index(chunk_matrix):
+    # TODO: build a FAISS inner-product index and add all rows of chunk_matrix to it
+    vectors = np.ascontiguousarray(chunk_matrix, dtype=np.float32)
+    index = faiss.IndexFlatIP(vectors.shape[1])
+    index.add(vectors)
+    return index
+
+# Step 21 - faiss_search
+import numpy as np
+
+def faiss_search(index, query_vector, k):
+    """Return top-k (scores, indices) as 1D arrays for a single query vector."""
+    # TODO: query the FAISS index with the single query vector and return flat top-k arrays
+    query = np.ascontiguousarray(query_vector, dtype=np.float32).reshape(1, -1)
+    scores, indices = index.search(query_vector, k)
+
+    return (
+        np.asarray(scores, dtype=np.float32).reshape(-1),
+        np.asarray(indices, dtype=np.int64).reshape(-1),
+    )
+
+# Step 22 - compare_faiss_to_numpy
+import numpy as np
+
+def compare_faiss_to_numpy(query_vector, chunk_matrix, index, k):
+    # TODO: return True iff FAISS and numpy cosine search agree on the top-k indices
+    k = min(k, len(chunk_matrix))
+    if k == 0:
+        return True
+
+    scores = cosine_similarity_search(query_vector, chunk_matrix)
+    numpy_indices = top_k_indices(scores, k)
+
+    normalized_chunks = l2_normalize(chunk_matrix)
+    normalized_query = l2_normalize(
+        np.asarray(query_vector, dtype=np.float32).reshape(1, -1)
+    )[0]
+
+    index = build_faiss_index(normalized_chunks)
+    _, faiss_indices = faiss_search(index, normalized_query, k)
+
+    return set(numpy_indices.tolist()) == set(faiss_indices.tolist())
+
+# Step 23 - save_faiss_index
+import faiss
+
+def save_faiss_index(index, path):
+    """Write `index` to `path` and return the index loaded back from disk."""
+    # TODO: persist the index to `path` and reload it; return the reloaded index
+    faiss.write_index(index, str(path))
+    return faiss.read_index(str(path))
+

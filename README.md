@@ -29,6 +29,10 @@ python scaffold.py
 - [x] **17.** top_k_indices
 - [x] **18.** top_k_chunks
 - [x] **19.** retrieve
+- [x] **20.** build_faiss_index
+- [x] **21.** faiss_search
+- [x] **22.** compare_faiss_to_numpy
+- [x] **23.** save_faiss_index
 
 ---
 
