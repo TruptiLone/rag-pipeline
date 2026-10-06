@@ -1,0 +1,1 @@
+BM25 is a lexical ranking function based on query-term matches, term frequency, inverse document frequency, and document length normalization. The k1 parameter controls term-frequency saturation. The b parameter controls document-length normalization. Lexical retrieval is useful for exact names and technical identifiers.

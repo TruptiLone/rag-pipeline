@@ -1,0 +1,86 @@
+[
+  {
+    "source": "rag",
+    "title": "Retrieval-augmented generation",
+    "path": "documents/rag.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "chunking",
+    "title": "Document chunking",
+    "path": "documents/chunking.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "embeddings",
+    "title": "Text embeddings",
+    "path": "documents/embeddings.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "cosine",
+    "title": "Cosine similarity and normalization",
+    "path": "documents/cosine.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "faiss",
+    "title": "FAISS vector search",
+    "path": "documents/faiss.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "bm25",
+    "title": "BM25 lexical retrieval",
+    "path": "documents/bm25.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "hybrid",
+    "title": "Hybrid retrieval",
+    "path": "documents/hybrid.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "reranking",
+    "title": "Reranking and diversity",
+    "path": "documents/reranking.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "metrics",
+    "title": "Retrieval evaluation",
+    "path": "documents/metrics.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "grounding",
+    "title": "Grounding and abstention",
+    "path": "documents/grounding.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "persistence",
+    "title": "Corpus persistence and source metadata",
+    "path": "documents/persistence.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  },
+  {
+    "source": "memory",
+    "title": "Conversation memory and caching",
+    "path": "documents/memory.txt",
+    "origin": "Project-authored educational text; not scraped",
+    "url": null
+  }
+]

@@ -1,0 +1,1 @@
+Hit rate at k is the fraction of questions with at least one relevant result in their top k. Recall at k measures the fraction of gold-relevant passages retrieved. Mean reciprocal rank averages the reciprocal position of the first relevant result. Evaluation labels must refer to existing corpus chunk IDs. Use separate development and test questions.

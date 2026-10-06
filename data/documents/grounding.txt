@@ -1,0 +1,1 @@
+A grounded answer is supported by retrieved evidence. When no useful evidence is available, a RAG assistant should abstain rather than invent an answer. A similarity threshold is only a heuristic and should be validated. Token overlap cannot establish factual support: an answer can repeat context words while contradicting the context.

@@ -1,0 +1,1 @@
+Hybrid retrieval combines dense semantic retrieval with lexical retrieval such as BM25. One approach scales both score vectors and computes a weighted sum. Another approach, reciprocal rank fusion, combines ranked lists using reciprocal rank contributions. Mixing retrieval methods can help some queries, but improvements must be measured.

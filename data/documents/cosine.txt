@@ -1,0 +1,1 @@
+Cosine similarity is the dot product of two vectors divided by the product of their L2 norms. After L2 normalization, each nonzero vector has unit length, so its inner product with another normalized vector equals cosine similarity. Zero vectors must be handled separately to avoid division by zero.

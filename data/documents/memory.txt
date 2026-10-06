@@ -1,0 +1,1 @@
+Conversation memory stores user and assistant turns. A follow-up question may need the previous user question to become self-contained. A query embedding cache avoids re-encoding repeated queries. Cache keys must account for the embedding model when multiple models share a cache. Memory and caching do not guarantee answer correctness.

@@ -1,0 +1,1 @@
+Persist chunk metadata together with its embedding matrix so vector rows remain aligned with chunk records. A stable chunk_id identifies a passage, and source identifies the document it came from. Record the embedding model and chunking configuration with an index. Rebuild embeddings when the embedding model changes.

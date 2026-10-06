@@ -1,0 +1,1 @@
+FAISS supports nearest-neighbor search over dense vectors. IndexFlatIP stores vectors and performs exact inner-product search. Normalize corpus vectors and queries when using inner products as cosine similarities. Search returns score arrays followed by index arrays. Equally scoring vectors can have a different ordering across search backends.

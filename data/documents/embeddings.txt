@@ -1,0 +1,1 @@
+An embedding is a numerical vector representation of text. An embedding model encodes both document chunks and queries into a shared vector space. Related meanings can have similar vectors even when the wording differs. Semantic similarity is not proof that a passage answers a question.

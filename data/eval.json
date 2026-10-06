@@ -1,0 +1,246 @@
+[
+  {
+    "question": "What components does RAG combine?",
+    "answer": "A retriever and a generator.",
+    "relevant_ids": [
+      "rag::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "Does using RAG automatically fine-tune the generator?",
+    "answer": "No. RAG supplies retrieved context; it does not by itself fine-tune the generator.",
+    "relevant_ids": [
+      "rag::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "Why use overlapping document chunks?",
+    "answer": "To preserve context at passage boundaries.",
+    "relevant_ids": [
+      "chunking::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "What determines the size of token-based chunks?",
+    "answer": "The number of tokens produced by a tokenizer.",
+    "relevant_ids": [
+      "chunking::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "What is a text embedding?",
+    "answer": "A numerical vector representation of text.",
+    "relevant_ids": [
+      "embeddings::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "Why embed both queries and document chunks?",
+    "answer": "To compare them in a shared vector space.",
+    "relevant_ids": [
+      "embeddings::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "Why L2-normalize embeddings before inner-product search?",
+    "answer": "So inner products equal cosine similarities for nonzero vectors.",
+    "relevant_ids": [
+      "cosine::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "Why handle zero vectors separately during normalization?",
+    "answer": "To avoid division by zero.",
+    "relevant_ids": [
+      "cosine::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "What does FAISS search over?",
+    "answer": "Dense vectors.",
+    "relevant_ids": [
+      "faiss::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "Is IndexFlatIP exact or approximate?",
+    "answer": "It performs exact inner-product search.",
+    "relevant_ids": [
+      "faiss::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "What does the BM25 k1 parameter control?",
+    "answer": "Term-frequency saturation.",
+    "relevant_ids": [
+      "bm25::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "What does the BM25 b parameter control?",
+    "answer": "Document-length normalization.",
+    "relevant_ids": [
+      "bm25::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "Which retrieval methods can hybrid search combine?",
+    "answer": "Dense semantic retrieval and lexical retrieval such as BM25.",
+    "relevant_ids": [
+      "hybrid::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "Does reciprocal rank fusion combine raw scores or ranks?",
+    "answer": "It combines ranks using reciprocal rank contributions.",
+    "relevant_ids": [
+      "hybrid::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "What does a cross-encoder reranker score jointly?",
+    "answer": "A query and a candidate passage.",
+    "relevant_ids": [
+      "reranking::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "What does a lower MMR lambda emphasize?",
+    "answer": "Diversity relative to already selected passages.",
+    "relevant_ids": [
+      "reranking::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "How is hit rate at k defined?",
+    "answer": "The fraction of questions with at least one relevant result in their top k.",
+    "relevant_ids": [
+      "metrics::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "What does mean reciprocal rank measure?",
+    "answer": "The average reciprocal position of the first relevant result.",
+    "relevant_ids": [
+      "metrics::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "What should an assistant do when evidence is insufficient?",
+    "answer": "Abstain rather than invent an answer.",
+    "relevant_ids": [
+      "grounding::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "Does word overlap prove that an answer is factually supported?",
+    "answer": "No. An answer can overlap in words while contradicting the context.",
+    "relevant_ids": [
+      "grounding::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "Why persist chunk metadata alongside embeddings?",
+    "answer": "To keep vector rows aligned with their source chunks.",
+    "relevant_ids": [
+      "persistence::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "When should embeddings be rebuilt?",
+    "answer": "When the embedding model changes.",
+    "relevant_ids": [
+      "persistence::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "Why cache query embeddings?",
+    "answer": "To avoid re-encoding repeated queries.",
+    "relevant_ids": [
+      "memory::0"
+    ],
+    "split": "dev",
+    "answerable": true
+  },
+  {
+    "question": "Why rewrite a conversational follow-up?",
+    "answer": "To include enough prior context for a self-contained search query.",
+    "relevant_ids": [
+      "memory::0"
+    ],
+    "split": "test",
+    "answerable": true
+  },
+  {
+    "question": "What is the weather in Paris today?",
+    "answer": "I do not know",
+    "relevant_ids": [],
+    "split": "test",
+    "answerable": false
+  },
+  {
+    "question": "What is my account password?",
+    "answer": "I do not know",
+    "relevant_ids": [],
+    "split": "test",
+    "answerable": false
+  },
+  {
+    "question": "Who won the latest football championship?",
+    "answer": "I do not know",
+    "relevant_ids": [],
+    "split": "test",
+    "answerable": false
+  },
+  {
+    "question": "What is the population of Tokyo in 2026?",
+    "answer": "I do not know",
+    "relevant_ids": [],
+    "split": "test",
+    "answerable": false
+  }
+]

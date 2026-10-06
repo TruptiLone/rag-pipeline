@@ -1,0 +1,152 @@
+{
+  "split": "test",
+  "answerable_questions": 12,
+  "chunks": 12,
+  "methods": {
+    "bm25": {
+      "hit_at_3": 1.0,
+      "recall_at_3": 1.0,
+      "mrr_at_3": 0.9583333333333334,
+      "mean_query_ms": 0.09456583453963201,
+      "queries": [
+        {
+          "question": "Does using RAG automatically fine-tune the generator?",
+          "retrieved_ids": [
+            "rag::0",
+            "chunking::0",
+            "grounding::0"
+          ],
+          "relevant_ids": [
+            "rag::0"
+          ]
+        },
+        {
+          "question": "What determines the size of token-based chunks?",
+          "retrieved_ids": [
+            "chunking::0",
+            "embeddings::0",
+            "metrics::0"
+          ],
+          "relevant_ids": [
+            "chunking::0"
+          ]
+        },
+        {
+          "question": "Why embed both queries and document chunks?",
+          "retrieved_ids": [
+            "embeddings::0",
+            "chunking::0",
+            "faiss::0"
+          ],
+          "relevant_ids": [
+            "embeddings::0"
+          ]
+        },
+        {
+          "question": "Why handle zero vectors separately during normalization?",
+          "retrieved_ids": [
+            "cosine::0",
+            "faiss::0",
+            "embeddings::0"
+          ],
+          "relevant_ids": [
+            "cosine::0"
+          ]
+        },
+        {
+          "question": "Is IndexFlatIP exact or approximate?",
+          "retrieved_ids": [
+            "faiss::0",
+            "bm25::0",
+            "rag::0"
+          ],
+          "relevant_ids": [
+            "faiss::0"
+          ]
+        },
+        {
+          "question": "What does the BM25 b parameter control?",
+          "retrieved_ids": [
+            "bm25::0",
+            "rag::0",
+            "metrics::0"
+          ],
+          "relevant_ids": [
+            "bm25::0"
+          ]
+        },
+        {
+          "question": "Does reciprocal rank fusion combine raw scores or ranks?",
+          "retrieved_ids": [
+            "hybrid::0",
+            "rag::0",
+            "metrics::0"
+          ],
+          "relevant_ids": [
+            "hybrid::0"
+          ]
+        },
+        {
+          "question": "What does a lower MMR lambda emphasize?",
+          "retrieved_ids": [
+            "reranking::0",
+            "rag::0",
+            "embeddings::0"
+          ],
+          "relevant_ids": [
+            "reranking::0"
+          ]
+        },
+        {
+          "question": "What does mean reciprocal rank measure?",
+          "retrieved_ids": [
+            "metrics::0",
+            "hybrid::0",
+            "rag::0"
+          ],
+          "relevant_ids": [
+            "metrics::0"
+          ]
+        },
+        {
+          "question": "Does word overlap prove that an answer is factually supported?",
+          "retrieved_ids": [
+            "grounding::0",
+            "embeddings::0",
+            "rag::0"
+          ],
+          "relevant_ids": [
+            "grounding::0"
+          ]
+        },
+        {
+          "question": "When should embeddings be rebuilt?",
+          "retrieved_ids": [
+            "grounding::0",
+            "persistence::0",
+            "rag::0"
+          ],
+          "relevant_ids": [
+            "persistence::0"
+          ]
+        },
+        {
+          "question": "Why rewrite a conversational follow-up?",
+          "retrieved_ids": [
+            "memory::0",
+            "reranking::0",
+            "embeddings::0"
+          ],
+          "relevant_ids": [
+            "memory::0"
+          ]
+        }
+      ]
+    }
+  },
+  "generation_evaluated": false,
+  "unanswerable_questions_excluded_from_retrieval_average": 4,
+  "corpus_sha256": "5253dca0e16d4cb0be3e0fca4e9358886b6aea85c1c6d683e6e38bd229f7a6b6",
+  "python": "3.12.2",
+  "numpy": "1.26.4"
+}

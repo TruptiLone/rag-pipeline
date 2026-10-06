@@ -1,0 +1,1 @@
+A cross-encoder reranker jointly scores a query and a candidate passage. It is usually applied to a shortlist from a cheaper retriever. Maximal marginal relevance (MMR) balances query relevance against similarity to already selected passages. A higher lambda weights relevance more; a lower lambda weights diversity more.

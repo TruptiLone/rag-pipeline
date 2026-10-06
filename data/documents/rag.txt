@@ -1,0 +1,1 @@
+Retrieval-augmented generation (RAG) combines a retriever with a generator. The retriever finds passages from a document collection. The generator receives those passages as context together with a question. RAG does not by itself train or fine-tune the generator. Answers should be checked against their supporting passages.

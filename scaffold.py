@@ -1,179 +1,98 @@
-"""
-RAG Pipeline scaffold.
-
-Run this with: python scaffold.py
-Uses functions defined in model.py.
-"""
-
-from model import *  # noqa: F401, F403 (pulls in your solution functions)
-
-"""End-to-end demo of a from-scratch Retrieval-Augmented Generation pipeline."""
-import subprocess
-import sys
-import importlib
-
-
-def _ensure(pkg, import_name=None):
-    name = import_name or pkg
-    try:
-        importlib.import_module(name)
-    except ImportError:
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--quiet", pkg])
-
-
-# Make sure optional dependencies used by solution.py are available before import.
-_ensure("faiss-cpu", "faiss")
-_ensure("rank-bm25", "rank_bm25")
-_ensure("sentence-transformers", "sentence_transformers")
-_ensure("transformers")
-_ensure("torch")
-_ensure("numpy")
-_ensure("beautifulsoup4", "bs4")
-_ensure("nltk")
-
+"""Run a reproducible retrieval demo; opt into local generation with --generate."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import platform
+import time
 import numpy as np
-import torch
+import model as m
 
-from solution import (
-    load_text_file,
-    load_text_directory,
-    extract_text_from_html,
-    normalize_text,
-    make_document,
-    chunk_fixed_size,
-    chunk_by_tokens,
-    chunk_by_sentences,
-    chunk_with_overlap,
-    attach_chunk_metadata,
-    load_embedding_model,
-    embed_text,
-    embed_chunks,
-    l2_normalize,
-    save_corpus,
-    cosine_similarity_search,
-    top_k_indices,
-    top_k_chunks,
-    retrieve,
-    build_faiss_index,
-    faiss_search,
-    compare_faiss_to_numpy,
-    save_faiss_index,
-    build_prompt_template,
-    format_context,
-    truncate_context,
-    add_system_instruction,
-    load_generator,
-    generate_answer,
-    rag_answer,
-    track_source_chunk_ids,
-    append_source_references,
-    query_rewrite,
-    hyde_retrieve,
-    reciprocal_rank_fusion,
-    bm25_search,
-    hybrid_search,
-    rerank_cross_encoder,
-    maximal_marginal_relevance,
-    filter_by_metadata,
-    build_eval_set,
-    hit_rate_at_k,
-    recall_at_k,
-    mean_reciprocal_rank,
-    faithfulness_score,
-    relevance_score,
-    handle_no_context,
-    deduplicate_chunks,
-    cache_query_embedding,
-    update_chat_memory,
-    rewrite_followup,
-)
+ROOT = Path(__file__).resolve().parent
+EMBED_MODEL = 'sentence-transformers/all-MiniLM-L6-v2'
+
+
+def load_corpus():
+    manifest = json.loads((ROOT / 'data/manifest.json').read_text())
+    chunks = []
+    for document in manifest:
+        text = m.normalize_text(m.load_text_file(ROOT / 'data' / document['path']))
+        added = m.attach_chunk_metadata(m.chunk_with_overlap(text, 800, 100), document['source'])
+        for chunk in added:
+            chunk['metadata'].update(title=document['title'], origin=document['origin'])
+        chunks.extend(added)
+    return chunks
+
+
+def evaluate(chunks, embed_model=None, embeddings=None, split='test'):
+    examples = [e for e in m.build_eval_set() if e['split'] == split and e['answerable']]
+    ids = {c['chunk_id'] for c in chunks}
+    for example in m.build_eval_set():
+        if not set(example['relevant_ids']).issubset(ids):
+            raise ValueError('Evaluation references missing chunk IDs; review corpus labels')
+    methods = {'bm25': lambda q: m.bm25_search(q, chunks, k=3)}
+    if embed_model is not None:
+        methods['dense'] = lambda q: [(int(i), float(s)) for i, s in
+            enumerate(m.cosine_similarity_search(m.embed_text(embed_model, q), embeddings))]
+        methods['hybrid'] = lambda q: m.hybrid_search(q, chunks, embeddings, embed_model, k=3)
+    results = {}
+    for name, search in methods.items():
+        retrieved, gold, details, times = [], [], [], []
+        for example in examples:
+            start = time.perf_counter()
+            hits = sorted(search(m.query_rewrite(example['question'])), key=lambda pair: pair[1], reverse=True)[:3]
+            times.append((time.perf_counter() - start) * 1000)
+            found = [chunks[i]['chunk_id'] for i, score in hits]
+            retrieved.append(found); gold.append(example['relevant_ids'])
+            details.append({'question': example['question'], 'retrieved_ids': found, 'relevant_ids': example['relevant_ids']})
+        results[name] = {'hit_at_3': m.hit_rate_at_k(retrieved, gold, 3),
+                         'recall_at_3': m.recall_at_k(retrieved, gold, 3),
+                         'mrr_at_3': m.mean_reciprocal_rank(retrieved, gold),
+                         'mean_query_ms': float(np.mean(times)), 'queries': details}
+    return {'split': split, 'answerable_questions': len(examples), 'chunks': len(chunks),
+            'methods': results, 'generation_evaluated': False,
+            'unanswerable_questions_excluded_from_retrieval_average': 4 if split == 'test' else 0,
+            'corpus_sha256': hashlib.sha256(json.dumps(chunks, sort_keys=True).encode()).hexdigest(),
+            'python': platform.python_version(), 'numpy': np.__version__}
 
 
 def main():
-    np.random.seed(0)
-    torch.manual_seed(0)
-
-    # 1) Pre-populated corpus (fixed here so the pipeline is reproducible).
-    raw_docs = [
-        "The Eiffel Tower is a wrought-iron lattice tower located in Paris, France. It was completed in 1889.",
-        "Photosynthesis is the process by which green plants convert sunlight, water, and carbon dioxide into glucose and oxygen.",
-        "The Pacific Ocean is the largest and deepest ocean on Earth, covering more than 60 million square miles.",
-        "Python is a high-level programming language known for its readable syntax and large standard library.",
-    ]
-    docs = [normalize_text(d) for d in raw_docs]
-    print(f"[corpus] {len(docs)} docs, first preview: {docs[0][:60]!r}")
-
-    # 2) Chunk each document and attach metadata.
-    all_chunks = []
-    for i, doc in enumerate(docs):
-        pieces = chunk_with_overlap(doc, chunk_size=120, overlap=20)
-        all_chunks.extend(attach_chunk_metadata(pieces, source=f"doc_{i}"))
-    print(f"[chunks] produced {len(all_chunks)} chunks")
-
-    # 3) Load embedding model and embed all chunks (then L2-normalize).
-    embed_model = load_embedding_model("sentence-transformers/all-MiniLM-L6-v2")
-    embeddings = embed_chunks(embed_model, all_chunks, batch_size=8)
-    embeddings = l2_normalize(np.asarray(embeddings, dtype=np.float32))
-    print(f"[embeddings] shape={embeddings.shape}, dtype={embeddings.dtype}")
-
-    # 4) Dense retrieval via numpy cosine search.
-    question = build_eval_set()[0]["question"]
-    clean_q = query_rewrite(question)
-    print(f"[query] raw={question!r} clean={clean_q!r}")
-
-    retrieved = retrieve(clean_q, embed_model, embeddings, all_chunks, k=3)
-    for r in retrieved:
-        chunk, score = r if isinstance(r, tuple) else (r, None)
-        text = chunk["text"] if isinstance(chunk, dict) else str(chunk)
-        print(f"  retrieved score={score} text={text[:60]!r}")
-
-    # 5) FAISS sanity check (same top-k as numpy path).
-    index = build_faiss_index(embeddings)
-    q_vec = l2_normalize(np.asarray([embed_text(embed_model, clean_q)], dtype=np.float32))[0]
-    faiss_ids, faiss_scores = faiss_search(index, q_vec, k=3)
-    print(f"[faiss] top ids={list(faiss_ids)} scores={[round(float(s),3) for s in faiss_scores]}")
-
-    # 6) BM25 + hybrid for comparison.
-    bm25_hits = bm25_search(clean_q, all_chunks, k=3)
-    print(f"[bm25] {len(bm25_hits)} hits")
-    hybrid_hits = hybrid_search(clean_q, all_chunks, embeddings, embed_model, alpha=0.5, k=3)
-    print(f"[hybrid] {len(hybrid_hits)} hits")
-
-    # 7) Prompt assembly + local generation.
-    context_chunks = [r[0] if isinstance(r, tuple) else r for r in retrieved]
-    gen_model, gen_tok = load_generator("sshleifer/tiny-gpt2")
-    answer = rag_answer(clean_q, all_chunks, embeddings, embed_model, gen_model, gen_tok, k=3)
-    answer_text = answer["answer"] if isinstance(answer, dict) else str(answer)
-    print(f"[answer] {answer_text[:120]!r}")
-
-    cited = append_source_references(answer_text, context_chunks)
-    print(f"[cited] {cited[:160]!r}")
-
-    # 8) Evaluation metrics on the toy eval set.
-    eval_set = build_eval_set()
-    retrieved_ids, relevant_ids = [], []
-    for item in eval_set:
-        hits = retrieve(query_rewrite(item["question"]), embed_model, embeddings, all_chunks, k=5)
-        ids = []
-        for h in hits:
-            chunk = h[0] if isinstance(h, tuple) else h
-            ids.append(chunk.get("chunk_id") if isinstance(chunk, dict) else chunk)
-        retrieved_ids.append(ids)
-        relevant_ids.append(item["relevant_ids"])
-    print(f"[eval] hit@3={hit_rate_at_k(retrieved_ids, relevant_ids, 3):.2f} "
-          f"recall@3={recall_at_k(retrieved_ids, relevant_ids, 3):.2f} "
-          f"mrr={mean_reciprocal_rank(retrieved_ids, relevant_ids):.2f}")
-
-    faith = faithfulness_score(answer_text, context_chunks)
-    rel = relevance_score(answer_text, clean_q)
-    print(f"[quality] faithfulness={faith:.2f} relevance={rel:.2f}")
-
-    # 9) Conversational memory: a follow-up turn.
-    history = update_chat_memory([], clean_q, answer_text)
-    followup = "And what about its main benefits?"
-    standalone = rewrite_followup(followup, history)
-    print(f"[followup] standalone={standalone!r}")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--dense', action='store_true', help='Download/load the embedding model and compare dense/hybrid retrieval')
+    parser.add_argument('--generate', action='store_true', help='Also download/load an instruction model and generate one answer')
+    parser.add_argument('--question', default='Why normalize embeddings before cosine search?')
+    parser.add_argument('--generator', default='HuggingFaceTB/SmolLM2-360M-Instruct')
+    parser.add_argument('--split', choices=['dev', 'test'], default='test')
+    args = parser.parse_args()
+    chunks = load_corpus()
+    embedding_model, embeddings = None, None
+    if args.dense or args.generate:
+        embedding_model = m.load_embedding_model(EMBED_MODEL)
+        embeddings = m.l2_normalize(m.embed_chunks(embedding_model, chunks))
+        artifact = ROOT / 'artifacts'; artifact.mkdir(exist_ok=True)
+        m.save_corpus(embeddings, chunks, artifact)
+        index = m.build_faiss_index(embeddings)
+        reloaded = m.save_faiss_index(index, artifact / 'corpus.faiss')
+        vector = m.embed_text(embedding_model, args.question)
+        if not m.compare_faiss_to_numpy(vector, embeddings, reloaded, 3):
+            raise AssertionError('Reloaded FAISS index disagrees with NumPy')
+        (artifact / 'config.json').write_text(json.dumps({'embedding_model': EMBED_MODEL, 'chunk_size': 800, 'overlap': 100}, indent=2))
+    results = evaluate(chunks, embedding_model, embeddings, args.split)
+    reports = ROOT / 'reports'; reports.mkdir(exist_ok=True)
+    suffix = 'all' if embedding_model is not None else 'bm25'
+    path = reports / f'retrieval_{args.split}_{suffix}.json'
+    path.write_text(json.dumps(results, indent=2) + '\n')
+    for method, scores in results['methods'].items():
+        print(method, {key: value for key, value in scores.items() if key != 'queries'})
+    print('Saved', path)
+    if args.generate:
+        generator, tokenizer = m.load_generator(args.generator)
+        answer = m.rag_answer(args.question, chunks, embeddings, embedding_model, generator, tokenizer)
+        print(json.dumps(answer, indent=2))
+        (reports / 'answer_example.json').write_text(json.dumps(answer, indent=2) + '\n')
+    else:
+        print('Retrieval-only run: no generated answer or answer-quality claim.')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

@@ -1,0 +1,1 @@
+Chunking divides a document into smaller searchable passages. Token-based chunking controls size using a tokenizer. Overlapping chunks repeat part of the previous passage to preserve boundary context. Too little context can hide an answer, while oversized chunks can include distracting material and exceed the generator input budget.
