@@ -454,3 +454,15 @@ def rag_answer(query, chunks, embeddings, embed_model, generator, tokenizer, k=3
         "query": query,
     }
 
+# Step 31 - track_source_chunk_ids
+def track_source_chunk_ids(source_chunks):
+    # TODO: return the list of chunk ids from the retrieved source chunks, preserving order
+    return [chunk["id"] for chunk in source_chunks if "id" in chunk]
+
+# Step 32 - append_source_references
+def append_source_references(answer_text, source_chunks):
+    # TODO: append a 'Sources: [id1, id2, ...]' line to answer_text using the source chunk ids
+    ids = track_source_chunk_ids(source_chunks)
+    references = ", ".join(str(chunk_id) for chunk_id in ids)
+    return f"{answer_text}\nSources: [{references}]"
+
