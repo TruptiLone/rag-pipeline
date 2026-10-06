@@ -56,6 +56,7 @@ python scaffold.py
 - [x] **44.** mean_reciprocal_rank
 - [x] **45.** faithfulness_score
 - [x] **46.** relevance_score
+- [x] **47.** handle_no_context
 
 ---
 

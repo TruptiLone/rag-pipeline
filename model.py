@@ -754,3 +754,17 @@ def relevance_score(answer, question):
 
     return float(len(answer_tokens & question_tokens) / len(union))
 
+# Step 47 - handle_no_context
+def handle_no_context(scored_chunks, threshold=0.2):
+    """Return {'abstain': bool, 'message': str} based on top score vs threshold."""
+    # TODO: abstain when no chunk's score strictly exceeds the threshold
+    has_context = any(
+        (item["score"] if isinstance(item, dict) else item[1]) > threshold
+        for item in scored_chunks
+    )
+
+    return {
+        "abstain": not has_context,
+        "message": "" if has_context else "I do not know",
+    }
+
