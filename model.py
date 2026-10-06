@@ -722,3 +722,15 @@ def mean_reciprocal_rank(retrieved_ids_per_query, relevant_ids_per_query):
 
     return float(total / len(retrieved_ids_per_query))
 
+# Step 46 - relevance_score
+def relevance_score(answer, question):
+    # TODO: return token-overlap (Jaccard) similarity between answer and question in [0, 1]
+    answer_tokens = set(normalize_text(answer).lower().split())
+    question_tokens = set(normalize_text(question).lower().split())
+
+    union = answer_tokens | question_tokens
+    if not union:
+        return 0.0
+
+    return float(len(answer_tokens & question_tokens) / len(union))
+
