@@ -333,3 +333,14 @@ def save_faiss_index(index, path):
     faiss.write_index(index, str(path))
     return faiss.read_index(str(path))
 
+# Step 24 - build_prompt_template
+def build_prompt_template():
+    # TODO: return a RAG prompt template string with {context} and {question} placeholders.
+    return (
+        "Answer the question using only the provided context. "
+        "If the context does not contain the answer, say you don't know.\n\n"
+        "Context:\n{context}\n\n"
+        "Question: {question}\n\n"
+        "Answer:"
+    )
+
