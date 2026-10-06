@@ -591,3 +591,60 @@ def rerank_cross_encoder(query, candidate_chunks, cross_encoder):
     )
     return [chunk for chunk, score in ranked]
 
+# Step 39 - maximal_marginal_relevance
+def maximal_marginal_relevance(query_embedding, candidate_embeddings, k=5, lambda_param=0.5):
+    # TODO: greedily pick indices balancing query relevance and diversity from already-selected items.
+    candidates = np.asarray(candidate_embeddings, dtype=float)
+    query = np.asarray(query_embedding, dtype=float)
+
+    if k <= 0 or len(candidates) == 0:
+        return []
+
+    if not 0 <= lambda_param <= 1:
+        raise ValueError("lambda_param must be between 0 and 1")
+
+    norm = np.linalg.norm(query)
+    if norm > 0:
+        query = query / norm
+
+    relevance = candidates @ query
+
+    # Pick the most relevant candidate first.
+    first = int(np.argmax(relevance))
+    selected = [first]
+    available = np.ones(len(candidates), dtype=bool)
+    available[first] = False
+    max_similarity = candidates @ candidates[first]
+
+    while len(selected) < min(k, len(candidates)):
+        scores = (
+            lambda_param * relevance
+            - (1 - lambda_param) * max_similarity
+        )
+        scores[~available] = -np.inf
+
+        # Ties go to the smaller index.
+        index = int(np.argmax(scores))
+        selected.append(index)
+        available[index] = False
+
+        max_similarity = np.maximum(
+            max_similarity,
+            candidates @ candidates[index],
+        )
+
+    return selected
+
+# Step 40 - filter_by_metadata
+def filter_by_metadata(chunks, filter_dict):
+    # TODO: return only chunks whose metadata contains every key/value pair in filter_dict
+    return [
+        chunk
+        for chunk in chunks
+        if all(
+            key in chunk.get("metadata", {})
+            and chunk["metadata"][key] == value
+            for key, value in filter_dict.items()
+        )
+    ]
+
