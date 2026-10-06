@@ -676,12 +676,12 @@ def build_eval_set():
 # Step 42 - hit_rate_at_k
 def hit_rate_at_k(retrieved_ids_per_query, relevant_ids_per_query, k):
     # TODO: return the fraction of queries with at least one relevant id in the top-k retrieved
-    if not retrieved_ids or k <= 0:
+    if not retrieved_ids_per_query or k <= 0:
         return 0.0
 
     hits = sum(
         bool(set(retrieved[:k]) & set(relevant))
-        for retrieved, relevant in zip(retrieved_ids, relevant_ids)
+        for retrieved, relevant in zip(retrieved_ids_per_query, relevant_ids_per_query)
     )
-    return float(hits / len(retrieved_ids))
+    return float(hits / len(retrieved_ids_per_query))
 
