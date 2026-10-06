@@ -503,3 +503,45 @@ def reciprocal_rank_fusion(ranked_lists, k=60):
 
     return sorted(scores.items(), key=lambda pair: pair[1], reverse=True)
 
+# Step 36 - bm25_search
+import math
+from collections import Counter
+
+def bm25_search(query, chunks, k=5, k1=1.5, b=0.75):
+    # TODO: score chunks against the query with BM25 and return top-k (index, score) pairs
+    documents = [
+        (chunk["text"] if isinstance(chunk, dict) else chunk).lower().split()
+        for chunk in chunks
+    ]
+    if not documents or k <= 0:
+        return []
+
+    query_terms = set(query.lower().split())
+    term_counts = [Counter(tokens) for tokens in documents]
+    document_freq = Counter(
+        term for counts in term_counts for term in counts
+    )
+
+    n = len(documents)
+    avg_length = sum(map(len, documents)) / n
+    if avg_length == 0:
+        return []
+
+    results = []
+    for index, (tokens, counts) in enumerate(zip(documents, term_counts)):
+        overlap = query_terms.intersection(counts)
+        if not overlap:
+            continue
+
+        length_factor = k1 * (1 - b + b * len(tokens) / avg_length)
+        score = 0.0
+
+        for term in overlap:
+            df = document_freq[term]
+            idf = math.log((n - df + 0.5) / (df + 0.5) + 1)
+            tf = counts[term]
+            score += idf * tf * (k1 + 1) / (tf + length_factor)
+
+        results.append((index, float(score)))
+    return sorted(results, key=lambda item: item[1], reverse=True)[:k]
+
