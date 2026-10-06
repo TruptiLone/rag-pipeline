@@ -376,8 +376,9 @@ def add_system_instruction(prompt):
     """Prepend a fixed system instruction to the prompt."""
     # TODO: return a string that starts with a system instruction telling the model to use only the context
     instruction = (
-        "Answer only from the provided context. "
-        'If the context is insufficient, respond with exactly "I do not know".'
+        "You are a helpful assistant. "
+        "Answer the question using ONLY the provided context. "
+        "If the answer is not in the context, say 'I do not know'."
     )
     return instruction + "\n\n" + prompt
 
