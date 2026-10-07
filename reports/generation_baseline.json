@@ -1,0 +1,883 @@
+{
+  "created_utc": "2026-10-07T06:33:55.117892+00:00",
+  "embedding_model": "sentence-transformers/all-MiniLM-L6-v2",
+  "generator_model": "HuggingFaceTB/SmolLM2-360M-Instruct",
+  "generator_revision": "a10cc1512eabd3dde888204e902eca88bddb4951",
+  "device": "cpu",
+  "torch_threads": 4,
+  "config": {
+    "k": 3,
+    "threshold": 0.2,
+    "max_context_tokens": 1024,
+    "max_new_tokens": 100
+  },
+  "setup_seconds": {
+    "embedding": 23.727114249952137,
+    "generator": 21.69918308290653
+  },
+  "versions": {
+    "numpy": "1.26.4",
+    "torch": "2.5.1",
+    "transformers": "4.48.2",
+    "sentence-transformers": "4.1.0",
+    "faiss-cpu": "1.11.0"
+  },
+  "python": "3.10.6",
+  "faiss_roundtrip_verified": true,
+  "evaluation_note": "Unmodified baseline on small synthetic test set. Lexical overlap is not factual verification. Latency excludes downloads and model loading. No tuning performed.",
+  "results": [
+    {
+      "question": "Does using RAG automatically fine-tune the generator?",
+      "reference_answer": "No. RAG supplies retrieved context; it does not by itself fine-tune the generator.",
+      "answerable": true,
+      "gold_ids": [
+        "rag::0"
+      ],
+      "answer": "I do not know",
+      "supplied_sources": [
+        {
+          "text": "Retrieval-augmented generation (RAG) combines a retriever with a generator. The retriever finds passages from a document collection. The generator receives those passages as context together with a question. RAG does not by itself train or fine-tune the generator. Answers should be checked against their supporting passages.",
+          "source": "rag",
+          "position": 0,
+          "chunk_id": "rag::0",
+          "metadata": {
+            "source": "rag",
+            "title": "Retrieval-augmented generation",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "A grounded answer is supported by retrieved evidence. When no useful evidence is available, a RAG assistant should abstain rather than invent an answer. A similarity threshold is only a heuristic and should be validated. Token overlap cannot establish factual support: an answer can repeat context words while contradicting the context.",
+          "source": "grounding",
+          "position": 0,
+          "chunk_id": "grounding::0",
+          "metadata": {
+            "source": "grounding",
+            "title": "Grounding and abstention",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Chunking divides a document into smaller searchable passages. Token-based chunking controls size using a tokenizer. Overlapping chunks repeat part of the previous passage to preserve boundary context. Too little context can hide an answer, while oversized chunks can include distracting material and exceed the generator input budget.",
+          "source": "chunking",
+          "position": 0,
+          "chunk_id": "chunking::0",
+          "metadata": {
+            "source": "chunking",
+            "title": "Document chunking",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "rag::0",
+          "score": 0.5987820982389942
+        },
+        {
+          "chunk_id": "grounding::0",
+          "score": 0.22505333425841803
+        },
+        {
+          "chunk_id": "chunking::0",
+          "score": 0.16206932413076258
+        }
+      ],
+      "elapsed_seconds": 0.492037917021662,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.25,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "What determines the size of token-based chunks?",
+      "reference_answer": "The number of tokens produced by a tokenizer.",
+      "answerable": true,
+      "gold_ids": [
+        "chunking::0"
+      ],
+      "answer": "Token-based chunks are determined by the tokenizer.",
+      "supplied_sources": [
+        {
+          "text": "Chunking divides a document into smaller searchable passages. Token-based chunking controls size using a tokenizer. Overlapping chunks repeat part of the previous passage to preserve boundary context. Too little context can hide an answer, while oversized chunks can include distracting material and exceed the generator input budget.",
+          "source": "chunking",
+          "position": 0,
+          "chunk_id": "chunking::0",
+          "metadata": {
+            "source": "chunking",
+            "title": "Document chunking",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Persist chunk metadata together with its embedding matrix so vector rows remain aligned with chunk records. A stable chunk_id identifies a passage, and source identifies the document it came from. Record the embedding model and chunking configuration with an index. Rebuild embeddings when the embedding model changes.",
+          "source": "persistence",
+          "position": 0,
+          "chunk_id": "persistence::0",
+          "metadata": {
+            "source": "persistence",
+            "title": "Corpus persistence and source metadata",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "A grounded answer is supported by retrieved evidence. When no useful evidence is available, a RAG assistant should abstain rather than invent an answer. A similarity threshold is only a heuristic and should be validated. Token overlap cannot establish factual support: an answer can repeat context words while contradicting the context.",
+          "source": "grounding",
+          "position": 0,
+          "chunk_id": "grounding::0",
+          "metadata": {
+            "source": "grounding",
+            "title": "Grounding and abstention",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "chunking::0",
+          "score": 0.7301664399264698
+        },
+        {
+          "chunk_id": "persistence::0",
+          "score": 0.4205769420006582
+        },
+        {
+          "chunk_id": "grounding::0",
+          "score": 0.20569951767282824
+        }
+      ],
+      "elapsed_seconds": 0.5562469169963151,
+      "exact_abstention": false,
+      "lexical_faithfulness": 0.7142857142857143,
+      "lexical_relevance": 0.3333333333333333
+    },
+    {
+      "question": "Why embed both queries and document chunks?",
+      "reference_answer": "To compare them in a shared vector space.",
+      "answerable": true,
+      "gold_ids": [
+        "embeddings::0"
+      ],
+      "answer": "I do not know",
+      "supplied_sources": [
+        {
+          "text": "Persist chunk metadata together with its embedding matrix so vector rows remain aligned with chunk records. A stable chunk_id identifies a passage, and source identifies the document it came from. Record the embedding model and chunking configuration with an index. Rebuild embeddings when the embedding model changes.",
+          "source": "persistence",
+          "position": 0,
+          "chunk_id": "persistence::0",
+          "metadata": {
+            "source": "persistence",
+            "title": "Corpus persistence and source metadata",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Chunking divides a document into smaller searchable passages. Token-based chunking controls size using a tokenizer. Overlapping chunks repeat part of the previous passage to preserve boundary context. Too little context can hide an answer, while oversized chunks can include distracting material and exceed the generator input budget.",
+          "source": "chunking",
+          "position": 0,
+          "chunk_id": "chunking::0",
+          "metadata": {
+            "source": "chunking",
+            "title": "Document chunking",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "An embedding is a numerical vector representation of text. An embedding model encodes both document chunks and queries into a shared vector space. Related meanings can have similar vectors even when the wording differs. Semantic similarity is not proof that a passage answers a question.",
+          "source": "embeddings",
+          "position": 0,
+          "chunk_id": "embeddings::0",
+          "metadata": {
+            "source": "embeddings",
+            "title": "Text embeddings",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "persistence::0",
+          "score": 0.5774123012743496
+        },
+        {
+          "chunk_id": "chunking::0",
+          "score": 0.5698722025123442
+        },
+        {
+          "chunk_id": "embeddings::0",
+          "score": 0.5318953618807575
+        }
+      ],
+      "elapsed_seconds": 0.3673945419723168,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.25,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "Why handle zero vectors separately during normalization?",
+      "reference_answer": "To avoid division by zero.",
+      "answerable": true,
+      "gold_ids": [
+        "cosine::0"
+      ],
+      "answer": "I do not know",
+      "supplied_sources": [
+        {
+          "text": "Cosine similarity is the dot product of two vectors divided by the product of their L2 norms. After L2 normalization, each nonzero vector has unit length, so its inner product with another normalized vector equals cosine similarity. Zero vectors must be handled separately to avoid division by zero.",
+          "source": "cosine",
+          "position": 0,
+          "chunk_id": "cosine::0",
+          "metadata": {
+            "source": "cosine",
+            "title": "Cosine similarity and normalization",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "A cross-encoder reranker jointly scores a query and a candidate passage. It is usually applied to a shortlist from a cheaper retriever. Maximal marginal relevance (MMR) balances query relevance against similarity to already selected passages. A higher lambda weights relevance more; a lower lambda weights diversity more.",
+          "source": "reranking",
+          "position": 0,
+          "chunk_id": "reranking::0",
+          "metadata": {
+            "source": "reranking",
+            "title": "Reranking and diversity",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "An embedding is a numerical vector representation of text. An embedding model encodes both document chunks and queries into a shared vector space. Related meanings can have similar vectors even when the wording differs. Semantic similarity is not proof that a passage answers a question.",
+          "source": "embeddings",
+          "position": 0,
+          "chunk_id": "embeddings::0",
+          "metadata": {
+            "source": "embeddings",
+            "title": "Text embeddings",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "cosine::0",
+          "score": 0.5235797698237991
+        },
+        {
+          "chunk_id": "reranking::0",
+          "score": 0.18376686264514236
+        },
+        {
+          "chunk_id": "embeddings::0",
+          "score": 0.1644672786172793
+        }
+      ],
+      "elapsed_seconds": 0.4593266249867156,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.25,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "Is IndexFlatIP exact or approximate?",
+      "reference_answer": "It performs exact inner-product search.",
+      "answerable": true,
+      "gold_ids": [
+        "faiss::0"
+      ],
+      "answer": "I do not know",
+      "supplied_sources": [
+        {
+          "text": "FAISS supports nearest-neighbor search over dense vectors. IndexFlatIP stores vectors and performs exact inner-product search. Normalize corpus vectors and queries when using inner products as cosine similarities. Search returns score arrays followed by index arrays. Equally scoring vectors can have a different ordering across search backends.",
+          "source": "faiss",
+          "position": 0,
+          "chunk_id": "faiss::0",
+          "metadata": {
+            "source": "faiss",
+            "title": "FAISS vector search",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Hybrid retrieval combines dense semantic retrieval with lexical retrieval such as BM25. One approach scales both score vectors and computes a weighted sum. Another approach, reciprocal rank fusion, combines ranked lists using reciprocal rank contributions. Mixing retrieval methods can help some queries, but improvements must be measured.",
+          "source": "hybrid",
+          "position": 0,
+          "chunk_id": "hybrid::0",
+          "metadata": {
+            "source": "hybrid",
+            "title": "Hybrid retrieval",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "A cross-encoder reranker jointly scores a query and a candidate passage. It is usually applied to a shortlist from a cheaper retriever. Maximal marginal relevance (MMR) balances query relevance against similarity to already selected passages. A higher lambda weights relevance more; a lower lambda weights diversity more.",
+          "source": "reranking",
+          "position": 0,
+          "chunk_id": "reranking::0",
+          "metadata": {
+            "source": "reranking",
+            "title": "Reranking and diversity",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "faiss::0",
+          "score": 0.5541254507032711
+        },
+        {
+          "chunk_id": "hybrid::0",
+          "score": 0.2475200666961807
+        },
+        {
+          "chunk_id": "reranking::0",
+          "score": 0.22607643013291953
+        }
+      ],
+      "elapsed_seconds": 0.39740404195617884,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.0,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "What does the BM25 b parameter control?",
+      "reference_answer": "Document-length normalization.",
+      "answerable": true,
+      "gold_ids": [
+        "bm25::0"
+      ],
+      "answer": "The BM25 b parameter controls document-length normalization.",
+      "supplied_sources": [
+        {
+          "text": "BM25 is a lexical ranking function based on query-term matches, term frequency, inverse document frequency, and document length normalization. The k1 parameter controls term-frequency saturation. The b parameter controls document-length normalization. Lexical retrieval is useful for exact names and technical identifiers.",
+          "source": "bm25",
+          "position": 0,
+          "chunk_id": "bm25::0",
+          "metadata": {
+            "source": "bm25",
+            "title": "BM25 lexical retrieval",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "A cross-encoder reranker jointly scores a query and a candidate passage. It is usually applied to a shortlist from a cheaper retriever. Maximal marginal relevance (MMR) balances query relevance against similarity to already selected passages. A higher lambda weights relevance more; a lower lambda weights diversity more.",
+          "source": "reranking",
+          "position": 0,
+          "chunk_id": "reranking::0",
+          "metadata": {
+            "source": "reranking",
+            "title": "Reranking and diversity",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Hybrid retrieval combines dense semantic retrieval with lexical retrieval such as BM25. One approach scales both score vectors and computes a weighted sum. Another approach, reciprocal rank fusion, combines ranked lists using reciprocal rank contributions. Mixing retrieval methods can help some queries, but improvements must be measured.",
+          "source": "hybrid",
+          "position": 0,
+          "chunk_id": "hybrid::0",
+          "metadata": {
+            "source": "hybrid",
+            "title": "Hybrid retrieval",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "bm25::0",
+          "score": 0.638541303192454
+        },
+        {
+          "chunk_id": "reranking::0",
+          "score": 0.18176776013665077
+        },
+        {
+          "chunk_id": "hybrid::0",
+          "score": 0.16820820617395987
+        }
+      ],
+      "elapsed_seconds": 0.6126678339205682,
+      "exact_abstention": false,
+      "lexical_faithfulness": 1.0,
+      "lexical_relevance": 0.36363636363636365
+    },
+    {
+      "question": "Does reciprocal rank fusion combine raw scores or ranks?",
+      "reference_answer": "It combines ranks using reciprocal rank contributions.",
+      "answerable": true,
+      "gold_ids": [
+        "hybrid::0"
+      ],
+      "answer": "I do not know",
+      "supplied_sources": [
+        {
+          "text": "Hybrid retrieval combines dense semantic retrieval with lexical retrieval such as BM25. One approach scales both score vectors and computes a weighted sum. Another approach, reciprocal rank fusion, combines ranked lists using reciprocal rank contributions. Mixing retrieval methods can help some queries, but improvements must be measured.",
+          "source": "hybrid",
+          "position": 0,
+          "chunk_id": "hybrid::0",
+          "metadata": {
+            "source": "hybrid",
+            "title": "Hybrid retrieval",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "A cross-encoder reranker jointly scores a query and a candidate passage. It is usually applied to a shortlist from a cheaper retriever. Maximal marginal relevance (MMR) balances query relevance against similarity to already selected passages. A higher lambda weights relevance more; a lower lambda weights diversity more.",
+          "source": "reranking",
+          "position": 0,
+          "chunk_id": "reranking::0",
+          "metadata": {
+            "source": "reranking",
+            "title": "Reranking and diversity",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Hit rate at k is the fraction of questions with at least one relevant result in their top k. Recall at k measures the fraction of gold-relevant passages retrieved. Mean reciprocal rank averages the reciprocal position of the first relevant result. Evaluation labels must refer to existing corpus chunk IDs. Use separate development and test questions.",
+          "source": "metrics",
+          "position": 0,
+          "chunk_id": "metrics::0",
+          "metadata": {
+            "source": "metrics",
+            "title": "Retrieval evaluation",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "hybrid::0",
+          "score": 0.5198867623946155
+        },
+        {
+          "chunk_id": "reranking::0",
+          "score": 0.46267592804343993
+        },
+        {
+          "chunk_id": "metrics::0",
+          "score": 0.3494804401564544
+        }
+      ],
+      "elapsed_seconds": 0.40854729199782014,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.0,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "What does a lower MMR lambda emphasize?",
+      "reference_answer": "Diversity relative to already selected passages.",
+      "answerable": true,
+      "gold_ids": [
+        "reranking::0"
+      ],
+      "answer": "A lower lambda emphasizes relevance more.",
+      "supplied_sources": [
+        {
+          "text": "A cross-encoder reranker jointly scores a query and a candidate passage. It is usually applied to a shortlist from a cheaper retriever. Maximal marginal relevance (MMR) balances query relevance against similarity to already selected passages. A higher lambda weights relevance more; a lower lambda weights diversity more.",
+          "source": "reranking",
+          "position": 0,
+          "chunk_id": "reranking::0",
+          "metadata": {
+            "source": "reranking",
+            "title": "Reranking and diversity",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "BM25 is a lexical ranking function based on query-term matches, term frequency, inverse document frequency, and document length normalization. The k1 parameter controls term-frequency saturation. The b parameter controls document-length normalization. Lexical retrieval is useful for exact names and technical identifiers.",
+          "source": "bm25",
+          "position": 0,
+          "chunk_id": "bm25::0",
+          "metadata": {
+            "source": "bm25",
+            "title": "BM25 lexical retrieval",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Hit rate at k is the fraction of questions with at least one relevant result in their top k. Recall at k measures the fraction of gold-relevant passages retrieved. Mean reciprocal rank averages the reciprocal position of the first relevant result. Evaluation labels must refer to existing corpus chunk IDs. Use separate development and test questions.",
+          "source": "metrics",
+          "position": 0,
+          "chunk_id": "metrics::0",
+          "metadata": {
+            "source": "metrics",
+            "title": "Retrieval evaluation",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "reranking::0",
+          "score": 0.4878207445851307
+        },
+        {
+          "chunk_id": "bm25::0",
+          "score": 0.34164242891458624
+        },
+        {
+          "chunk_id": "metrics::0",
+          "score": 0.2745726366060534
+        }
+      ],
+      "elapsed_seconds": 0.48497895908076316,
+      "exact_abstention": false,
+      "lexical_faithfulness": 0.8333333333333334,
+      "lexical_relevance": 0.3
+    },
+    {
+      "question": "What does mean reciprocal rank measure?",
+      "reference_answer": "The average reciprocal position of the first relevant result.",
+      "answerable": true,
+      "gold_ids": [
+        "metrics::0"
+      ],
+      "answer": "mean reciprocal rank measures the fraction of gold-relevant passages retrieved from a query.",
+      "supplied_sources": [
+        {
+          "text": "Hit rate at k is the fraction of questions with at least one relevant result in their top k. Recall at k measures the fraction of gold-relevant passages retrieved. Mean reciprocal rank averages the reciprocal position of the first relevant result. Evaluation labels must refer to existing corpus chunk IDs. Use separate development and test questions.",
+          "source": "metrics",
+          "position": 0,
+          "chunk_id": "metrics::0",
+          "metadata": {
+            "source": "metrics",
+            "title": "Retrieval evaluation",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "A cross-encoder reranker jointly scores a query and a candidate passage. It is usually applied to a shortlist from a cheaper retriever. Maximal marginal relevance (MMR) balances query relevance against similarity to already selected passages. A higher lambda weights relevance more; a lower lambda weights diversity more.",
+          "source": "reranking",
+          "position": 0,
+          "chunk_id": "reranking::0",
+          "metadata": {
+            "source": "reranking",
+            "title": "Reranking and diversity",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Hybrid retrieval combines dense semantic retrieval with lexical retrieval such as BM25. One approach scales both score vectors and computes a weighted sum. Another approach, reciprocal rank fusion, combines ranked lists using reciprocal rank contributions. Mixing retrieval methods can help some queries, but improvements must be measured.",
+          "source": "hybrid",
+          "position": 0,
+          "chunk_id": "hybrid::0",
+          "metadata": {
+            "source": "hybrid",
+            "title": "Hybrid retrieval",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "metrics::0",
+          "score": 0.46725291328103163
+        },
+        {
+          "chunk_id": "reranking::0",
+          "score": 0.4268386715596364
+        },
+        {
+          "chunk_id": "hybrid::0",
+          "score": 0.42298754231583796
+        }
+      ],
+      "elapsed_seconds": 0.8394133750116453,
+      "exact_abstention": false,
+      "lexical_faithfulness": 0.8461538461538461,
+      "lexical_relevance": 0.17647058823529413
+    },
+    {
+      "question": "Does word overlap prove that an answer is factually supported?",
+      "reference_answer": "No. An answer can overlap in words while contradicting the context.",
+      "answerable": true,
+      "gold_ids": [
+        "grounding::0"
+      ],
+      "answer": "I do not know",
+      "supplied_sources": [
+        {
+          "text": "A grounded answer is supported by retrieved evidence. When no useful evidence is available, a RAG assistant should abstain rather than invent an answer. A similarity threshold is only a heuristic and should be validated. Token overlap cannot establish factual support: an answer can repeat context words while contradicting the context.",
+          "source": "grounding",
+          "position": 0,
+          "chunk_id": "grounding::0",
+          "metadata": {
+            "source": "grounding",
+            "title": "Grounding and abstention",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Chunking divides a document into smaller searchable passages. Token-based chunking controls size using a tokenizer. Overlapping chunks repeat part of the previous passage to preserve boundary context. Too little context can hide an answer, while oversized chunks can include distracting material and exceed the generator input budget.",
+          "source": "chunking",
+          "position": 0,
+          "chunk_id": "chunking::0",
+          "metadata": {
+            "source": "chunking",
+            "title": "Document chunking",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "An embedding is a numerical vector representation of text. An embedding model encodes both document chunks and queries into a shared vector space. Related meanings can have similar vectors even when the wording differs. Semantic similarity is not proof that a passage answers a question.",
+          "source": "embeddings",
+          "position": 0,
+          "chunk_id": "embeddings::0",
+          "metadata": {
+            "source": "embeddings",
+            "title": "Text embeddings",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "grounding::0",
+          "score": 0.6217962973820398
+        },
+        {
+          "chunk_id": "chunking::0",
+          "score": 0.20787211722896715
+        },
+        {
+          "chunk_id": "embeddings::0",
+          "score": 0.18295771463138608
+        }
+      ],
+      "elapsed_seconds": 0.42696483293548226,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.25,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "When should embeddings be rebuilt?",
+      "reference_answer": "When the embedding model changes.",
+      "answerable": true,
+      "gold_ids": [
+        "persistence::0"
+      ],
+      "answer": "I do not know",
+      "supplied_sources": [
+        {
+          "text": "An embedding is a numerical vector representation of text. An embedding model encodes both document chunks and queries into a shared vector space. Related meanings can have similar vectors even when the wording differs. Semantic similarity is not proof that a passage answers a question.",
+          "source": "embeddings",
+          "position": 0,
+          "chunk_id": "embeddings::0",
+          "metadata": {
+            "source": "embeddings",
+            "title": "Text embeddings",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Persist chunk metadata together with its embedding matrix so vector rows remain aligned with chunk records. A stable chunk_id identifies a passage, and source identifies the document it came from. Record the embedding model and chunking configuration with an index. Rebuild embeddings when the embedding model changes.",
+          "source": "persistence",
+          "position": 0,
+          "chunk_id": "persistence::0",
+          "metadata": {
+            "source": "persistence",
+            "title": "Corpus persistence and source metadata",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Conversation memory stores user and assistant turns. A follow-up question may need the previous user question to become self-contained. A query embedding cache avoids re-encoding repeated queries. Cache keys must account for the embedding model when multiple models share a cache. Memory and caching do not guarantee answer correctness.",
+          "source": "memory",
+          "position": 0,
+          "chunk_id": "memory::0",
+          "metadata": {
+            "source": "memory",
+            "title": "Conversation memory and caching",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "embeddings::0",
+          "score": 0.45987582124698556
+        },
+        {
+          "chunk_id": "persistence::0",
+          "score": 0.3888842372167613
+        },
+        {
+          "chunk_id": "memory::0",
+          "score": 0.34262897169693624
+        }
+      ],
+      "elapsed_seconds": 0.3637042079353705,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.5,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "Why rewrite a conversational follow-up?",
+      "reference_answer": "To include enough prior context for a self-contained search query.",
+      "answerable": true,
+      "gold_ids": [
+        "memory::0"
+      ],
+      "answer": "I do not know",
+      "supplied_sources": [
+        {
+          "text": "Conversation memory stores user and assistant turns. A follow-up question may need the previous user question to become self-contained. A query embedding cache avoids re-encoding repeated queries. Cache keys must account for the embedding model when multiple models share a cache. Memory and caching do not guarantee answer correctness.",
+          "source": "memory",
+          "position": 0,
+          "chunk_id": "memory::0",
+          "metadata": {
+            "source": "memory",
+            "title": "Conversation memory and caching",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Persist chunk metadata together with its embedding matrix so vector rows remain aligned with chunk records. A stable chunk_id identifies a passage, and source identifies the document it came from. Record the embedding model and chunking configuration with an index. Rebuild embeddings when the embedding model changes.",
+          "source": "persistence",
+          "position": 0,
+          "chunk_id": "persistence::0",
+          "metadata": {
+            "source": "persistence",
+            "title": "Corpus persistence and source metadata",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        },
+        {
+          "text": "Chunking divides a document into smaller searchable passages. Token-based chunking controls size using a tokenizer. Overlapping chunks repeat part of the previous passage to preserve boundary context. Too little context can hide an answer, while oversized chunks can include distracting material and exceed the generator input budget.",
+          "source": "chunking",
+          "position": 0,
+          "chunk_id": "chunking::0",
+          "metadata": {
+            "source": "chunking",
+            "title": "Document chunking",
+            "origin": "Project-authored educational text; not scraped"
+          }
+        }
+      ],
+      "retrieved": [
+        {
+          "chunk_id": "memory::0",
+          "score": 0.4018303994868126
+        },
+        {
+          "chunk_id": "persistence::0",
+          "score": 0.21054613845682146
+        },
+        {
+          "chunk_id": "chunking::0",
+          "score": 0.19061108462672724
+        }
+      ],
+      "elapsed_seconds": 0.37378650007303804,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.5,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "What is the weather in Paris today?",
+      "reference_answer": "I do not know",
+      "answerable": false,
+      "gold_ids": [],
+      "answer": "I do not know",
+      "supplied_sources": [],
+      "retrieved": [
+        {
+          "chunk_id": "cosine::0",
+          "score": 0.004816687214317125
+        },
+        {
+          "chunk_id": "faiss::0",
+          "score": -0.000721160835380535
+        },
+        {
+          "chunk_id": "bm25::0",
+          "score": -0.006704792291574727
+        }
+      ],
+      "elapsed_seconds": 0.006654790951870382,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.0,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "What is my account password?",
+      "reference_answer": "I do not know",
+      "answerable": false,
+      "gold_ids": [],
+      "answer": "I do not know",
+      "supplied_sources": [],
+      "retrieved": [
+        {
+          "chunk_id": "metrics::0",
+          "score": 0.09262514707397737
+        },
+        {
+          "chunk_id": "memory::0",
+          "score": 0.08122526955936847
+        },
+        {
+          "chunk_id": "rag::0",
+          "score": 0.08098376175016693
+        }
+      ],
+      "elapsed_seconds": 0.007165541988797486,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.0,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "Who won the latest football championship?",
+      "reference_answer": "I do not know",
+      "answerable": false,
+      "gold_ids": [],
+      "answer": "I do not know",
+      "supplied_sources": [],
+      "retrieved": [
+        {
+          "chunk_id": "hybrid::0",
+          "score": 0.07189794456979337
+        },
+        {
+          "chunk_id": "reranking::0",
+          "score": 0.07130784238574943
+        },
+        {
+          "chunk_id": "rag::0",
+          "score": 0.02524737097004768
+        }
+      ],
+      "elapsed_seconds": 0.006577583029866219,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.0,
+      "lexical_relevance": 0.0
+    },
+    {
+      "question": "What is the population of Tokyo in 2026?",
+      "reference_answer": "I do not know",
+      "answerable": false,
+      "gold_ids": [],
+      "answer": "I do not know",
+      "supplied_sources": [],
+      "retrieved": [
+        {
+          "chunk_id": "bm25::0",
+          "score": 0.08014791301370734
+        },
+        {
+          "chunk_id": "rag::0",
+          "score": 0.03635404195307238
+        },
+        {
+          "chunk_id": "memory::0",
+          "score": 0.03135484269164934
+        }
+      ],
+      "elapsed_seconds": 0.0074917919700965285,
+      "exact_abstention": true,
+      "lexical_faithfulness": 0.0,
+      "lexical_relevance": 0.0
+    }
+  ],
+  "latency_seconds": {
+    "mean": 0.36314767198928166,
+    "p50": 0.4029756669769995,
+    "p95": 0.6693542191933375
+  }
+}

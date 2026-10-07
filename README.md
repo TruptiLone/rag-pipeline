@@ -4,7 +4,7 @@ A modular Python application for searching technical documents and generating an
 
 **Verified:** 13 passing tests · 12-document corpus · 28 labeled evaluation questions · BM25 MRR@3 of 0.958 on 12 answerable test questions.
 
-The repository emphasizes reliable integration: consistent source identifiers, validated evaluation labels, persisted vector indexes, and explicit context budgets. Its current interface is a command-line application. Neural retrieval and generation are implemented as optional paths; their quality has not yet been measured in the committed report.
+The repository emphasizes reliable integration: consistent source identifiers, validated evaluation labels, persisted vector indexes, and explicit context budgets. Its current interface is a command-line application. Real-model validation now covers dense/hybrid retrieval and 16 generated-answer requests. Retrieval succeeds on the small corpus, while the configured generator shows significant answer-quality limitations; see the [baseline validation](reports/VALIDATION.md).
 
 [Quick start](#run-locally) · [Workflow](#workflow) · [Results](#recorded-results) · [Engineering](#engineering-improvements) · [Roadmap](#next-development-milestones)
 
@@ -58,9 +58,22 @@ The committed [BM25 evaluation report](reports/retrieval_test_bm25.json) records
 
 These are **small synthetic sanity-check results**, not a production benchmark. Each answerable question has one relevant chunk, so hit rate and recall coincide. The report includes each query's retrieved IDs, the corpus checksum, runtime versions, and timing. No retrieval parameters were tuned on this test set.
 
-The full evaluation file contains 12 development questions, 12 answerable test questions, and 4 out-of-scope test questions. Out-of-scope questions are excluded from the retrieval averages and reserved for a future generation/abstention evaluation. **Dense/hybrid model runs and generated-answer quality have not been measured in the committed report.**
+The full evaluation file contains 12 development questions, 12 answerable test questions, and 4 out-of-scope test questions. Out-of-scope questions are excluded from the retrieval averages and evaluated separately in the real-model baseline. **Real-model retrieval and generation have now been run separately; see the [baseline validation report](reports/VALIDATION.md) for results and failure examples.**
 
 The functions named `faithfulness_score` and `relevance_score` are lexical overlap heuristics. They do not detect factual contradictions, validate citations, or establish semantic correctness.
+
+## Real-model validation
+
+Both configured Hugging Face models were run locally. On the 12 answerable test questions, all three retrievers achieved hit@3 and recall@3 of 1.000; MRR@3 was **0.958 for BM25, 0.903 for dense retrieval, and 1.000 for hybrid retrieval**.
+
+Good retrieval did not guarantee good answers. An AI-assisted qualitative review of SmolLM2's responses found **1 fully correct, 1 partial, 2 incorrect, and 8 unnecessary refusals** out of 12 answerable questions, even though the supporting passage was in every prompt. The retrieval gate rejected all four out-of-scope questions before generation. This small synthetic baseline identifies generation as the next area to improve; it is not a production accuracy claim.
+
+- [Validation findings and per-question audit](reports/VALIDATION.md)
+- [All answers, supplied passages, timings, and runtime configuration](reports/generation_baseline.json)
+- [Qualitative review rubric and annotations](reports/generation_review.json)
+- [BM25/dense/hybrid retrieval comparison](reports/retrieval_test_all.json)
+
+Reproduce with `python validate_models.py` after installing the model dependencies. The exact tested environment is recorded in `requirements-validation.txt`. The generator and pipeline were not tuned during this baseline run.
 
 ## Run locally
 
@@ -88,7 +101,7 @@ The first model-backed run requires internet access to download model weights. T
 Models:
 
 - Embeddings: [all-MiniLM-L6-v2](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2).
-- Default generator: [SmolLM2-360M-Instruct](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct), a compact instruction model. Its suitability for this corpus still needs evaluation.
+- Default generator: [SmolLM2-360M-Instruct](https://huggingface.co/HuggingFaceTB/SmolLM2-360M-Instruct), a compact instruction model. Baseline evaluation found frequent unnecessary refusals and two incorrect answers; it is not yet a validated choice for the final UI.
 - Optional smoke-test generator: `--generator sshleifer/tiny-gpt2`. This checks plumbing; it is not suitable for meaningful grounded answers.
 
 The generator uses its chat template when available. Prompt length is checked with the tokenizer and reserves room for new tokens. A configurable similarity threshold can abstain before generation, but it is not a calibrated probability or a guarantee that evidence is sufficient.
@@ -159,11 +172,11 @@ There are two different flows: **indexing** prepares the corpus when documents c
 | Recall@k | For each query: distinct relevant IDs found in top k ÷ all relevant IDs; average across queries | How much required evidence was recovered | Implemented and measured; empty gold sets contribute zero in the helper |
 | Precision@k | Relevant retrieved results ÷ retrieved results up to k | How much irrelevant material reaches the context | Proposed; not yet implemented |
 | MRR@k | Average `1 / rank` of the first relevant result, or zero if absent from top k | Whether useful evidence appears near the top | Implemented; the report evaluates lists truncated to three |
-| Groundedness | Review whether each substantive claim is supported by the supplied passages | Whether generation invents or contradicts evidence | Not yet measured; word overlap is only a heuristic |
-| Answer correctness and completeness | Compare against reviewed reference answers and required facts | Whether the response answers the question accurately and sufficiently | Reference answers exist; semantic assessment is not implemented |
-| Citation correctness | Check whether each cited passage supports its associated claim | Whether references provide evidence rather than decoration | Source records are returned; claim-level validation is not implemented |
-| Abstention behavior | Measure refusal on unanswerable questions and unnecessary refusal on answerable ones separately | Whether the assistant knows when it lacks evidence | Gating tested with test doubles; end-to-end rates unmeasured |
-| Latency and cost | Measure retrieval, time to first token, total response time, token use, and compute cost | Whether the system is usable under realistic load | Mean BM25 query time recorded; p50/p95 and generation costs unmeasured |
+| Groundedness | Review whether each substantive claim is supported by the supplied passages | Whether generation invents or contradicts evidence | Baseline answers reviewed qualitatively; word overlap is only a heuristic |
+| Answer correctness and completeness | Compare against reviewed reference answers and required facts | Whether the response answers the question accurately and sufficiently | Baseline qualitatively reviewed; no automated semantic assessor |
+| Citation correctness | Check whether each cited passage supports its associated claim | Whether references provide evidence rather than decoration | Source records returned; substantive baseline answers omitted citation markers |
+| Abstention behavior | Measure refusal on unanswerable questions and unnecessary refusal on answerable ones separately | Whether the assistant knows when it lacks evidence | Baseline: 4/4 out-of-scope queries gated; 8/12 answerable queries unnecessarily refused |
+| Latency and cost | Measure retrieval, time to first token, total response time, token use, and compute cost | Whether the system is usable under realistic load | Local batch timing recorded; no matched retrieval warm-up or production load/cost benchmark |
 
 **Worked example:** gold evidence is `{A, B}` and the top three results are `[X, A, C]`. Hit@3 is `1`, recall@3 is `1/2`, precision@3 is `1/3`, and reciprocal rank is `1/2`. Retrieving one useful passage succeeds on hit rate but still misses half the evidence.
 
@@ -192,7 +205,7 @@ Change settings using development questions, record the configuration, and evalu
 | Missing context versus model failure | Inspect retrieval first, then the prompt, then generated claims | Separate retrieval reporting and mocked generation-path tests |
 | Prompt budget overflow | Count tokens and reserve space for output before generation | The answer path admits whole passages only when they fit |
 | Stale documents and embeddings | Version the corpus, configuration, and model; invalidate affected artifacts | Corpus checksum and model/chunking config exist; automatic refresh is still future work |
-| Exact terms versus paraphrases | Compare lexical, dense, and hybrid retrieval under the same labels | BM25 measured; neural comparisons available to run, not yet reported |
+| Exact terms versus paraphrases | Compare lexical, dense, and hybrid retrieval under the same labels | BM25, dense, and hybrid measured on the small synthetic corpus |
 | Cost and latency | Reuse models, cache embeddings, shortlist before expensive reranking, and profile each stage | Cache helper exists; no production load benchmark yet |
 
 In a multi-user system, document permissions must be enforced before evidence enters the prompt. Retrieved text is untrusted data and can contain prompt-injection instructions. A “use only the context” prompt is not a security boundary. Source validation, retrieval-time authorization, safe rendering, and adversarial tests are additional requirements, not features this local prototype already provides. [OWASP RAG security guidance](https://cheatsheetseries.owasp.org/cheatsheets/RAG_Security_Cheat_Sheet.html).
@@ -308,6 +321,8 @@ rag-pipeline/
 |---|---|
 | `README.md` | Project purpose, workflow, measured results, limitations, and setup instructions |
 | `model.py` | Reusable functions for ingestion, chunking, embeddings, retrieval, generation, and evaluation; despite its name, this is more than a model definition |
+| `validate_models.py` | Reproducible real-model baseline batch; saves every test answer, source passage, and timing |
+| `requirements-validation.txt` | Exact dependencies from the isolated validation environment |
 | `scaffold.py` | Command-line entry point that connects the helpers, loads the corpus, runs evaluation, and optionally generates an answer |
 | `requirements.txt` | NumPy dependency for the lightweight retrieval workflow |
 | `requirements-models.txt` | Additional dependencies for embeddings, FAISS, and local generation, including PyTorch and Transformers |
