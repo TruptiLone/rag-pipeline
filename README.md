@@ -69,6 +69,7 @@ Both configured Hugging Face models were run locally. On the 12 answerable test 
 Good retrieval did not guarantee good answers. An AI-assisted qualitative review of SmolLM2's responses found **1 fully correct, 1 partial, 2 incorrect, and 8 unnecessary refusals** out of 12 answerable questions, even though the supporting passage was in every prompt. The retrieval gate rejected all four out-of-scope questions before generation. This small synthetic baseline identifies generation as the next area to improve; it is not a production accuracy claim.
 
 - [Validation findings and per-question audit](reports/VALIDATION.md)
+- [Exact evidence passages with links to the original documents](reports/EVIDENCE_PASSAGES.md)
 - [All answers, supplied passages, timings, and runtime configuration](reports/generation_baseline.json)
 - [Qualitative review rubric and annotations](reports/generation_review.json)
 - [BM25/dense/hybrid retrieval comparison](reports/retrieval_test_all.json)

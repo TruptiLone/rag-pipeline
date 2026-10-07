@@ -6,97 +6,345 @@
       "question": "Does using RAG automatically fine-tune the generator?",
       "assessment": "unnecessary_abstention",
       "reason": "The supplied rag::0 explicitly says RAG does not by itself train or fine-tune the generator.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "rag::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-11"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "rag::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-11"
+        },
+        {
+          "chunk_id": "grounding::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-6"
+        },
+        {
+          "chunk_id": "chunking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-2"
+        }
+      ]
     },
     {
       "question": "What determines the size of token-based chunks?",
       "assessment": "partial",
       "reason": "Mentions the tokenizer but does not explain that chunk size is controlled by the token count/budget.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "chunking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-2"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "chunking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-2"
+        },
+        {
+          "chunk_id": "persistence::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-10"
+        },
+        {
+          "chunk_id": "grounding::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-6"
+        }
+      ]
     },
     {
       "question": "Why embed both queries and document chunks?",
       "assessment": "unnecessary_abstention",
       "reason": "The shared-vector-space explanation appears in embeddings::0, which was supplied.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "embeddings::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-4"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "persistence::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-10"
+        },
+        {
+          "chunk_id": "chunking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-2"
+        },
+        {
+          "chunk_id": "embeddings::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-4"
+        }
+      ]
     },
     {
       "question": "Why handle zero vectors separately during normalization?",
       "assessment": "unnecessary_abstention",
       "reason": "The division-by-zero explanation appears in cosine::0, which was supplied.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "cosine::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-3"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "cosine::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-3"
+        },
+        {
+          "chunk_id": "reranking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-12"
+        },
+        {
+          "chunk_id": "embeddings::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-4"
+        }
+      ]
     },
     {
       "question": "Is IndexFlatIP exact or approximate?",
       "assessment": "unnecessary_abstention",
       "reason": "The exact-search answer appears in faiss::0, which was supplied.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "faiss::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-5"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "faiss::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-5"
+        },
+        {
+          "chunk_id": "hybrid::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-7"
+        },
+        {
+          "chunk_id": "reranking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-12"
+        }
+      ]
     },
     {
       "question": "What does the BM25 b parameter control?",
       "assessment": "correct",
       "reason": "Correctly identifies document-length normalization, supported by bm25::0.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "bm25::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-1"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "bm25::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-1"
+        },
+        {
+          "chunk_id": "reranking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-12"
+        },
+        {
+          "chunk_id": "hybrid::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-7"
+        }
+      ]
     },
     {
       "question": "Does reciprocal rank fusion combine raw scores or ranks?",
       "assessment": "unnecessary_abstention",
       "reason": "The rank-based combination is explained in hybrid::0, which was supplied.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "hybrid::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-7"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "hybrid::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-7"
+        },
+        {
+          "chunk_id": "reranking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-12"
+        },
+        {
+          "chunk_id": "metrics::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-9"
+        }
+      ]
     },
     {
       "question": "What does a lower MMR lambda emphasize?",
       "assessment": "incorrect",
       "reason": "Reverses the documented tradeoff: lower lambda emphasizes diversity, not relevance.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "reranking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-12"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "reranking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-12"
+        },
+        {
+          "chunk_id": "bm25::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-1"
+        },
+        {
+          "chunk_id": "metrics::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-9"
+        }
+      ]
     },
     {
       "question": "What does mean reciprocal rank measure?",
       "assessment": "incorrect",
       "reason": "Describes recall rather than mean reciprocal rank, despite the correct definition in metrics::0.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "metrics::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-9"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "metrics::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-9"
+        },
+        {
+          "chunk_id": "reranking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-12"
+        },
+        {
+          "chunk_id": "hybrid::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-7"
+        }
+      ]
     },
     {
       "question": "Does word overlap prove that an answer is factually supported?",
       "assessment": "unnecessary_abstention",
       "reason": "The context explicitly explains that word overlap cannot establish factual support.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "grounding::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-6"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "grounding::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-6"
+        },
+        {
+          "chunk_id": "chunking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-2"
+        },
+        {
+          "chunk_id": "embeddings::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-4"
+        }
+      ]
     },
     {
       "question": "When should embeddings be rebuilt?",
       "assessment": "unnecessary_abstention",
       "reason": "The supplied persistence::0 says to rebuild when the embedding model changes.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "persistence::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-10"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "embeddings::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-4"
+        },
+        {
+          "chunk_id": "persistence::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-10"
+        },
+        {
+          "chunk_id": "memory::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-8"
+        }
+      ]
     },
     {
       "question": "Why rewrite a conversational follow-up?",
       "assessment": "unnecessary_abstention",
       "reason": "The supplied memory::0 explains making a follow-up self-contained.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [
+        {
+          "chunk_id": "memory::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-8"
+        }
+      ],
+      "supplied_context": [
+        {
+          "chunk_id": "memory::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-8"
+        },
+        {
+          "chunk_id": "persistence::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-10"
+        },
+        {
+          "chunk_id": "chunking::0",
+          "passage_link": "EVIDENCE_PASSAGES.md#passage-2"
+        }
+      ]
     },
     {
       "question": "What is the weather in Paris today?",
       "assessment": "correct_abstention",
       "reason": "No source cleared the threshold; generation was bypassed. This tests the pipeline gate, not generator judgment.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [],
+      "supplied_context": []
     },
     {
       "question": "What is my account password?",
       "assessment": "correct_abstention",
       "reason": "No source cleared the threshold; generation was bypassed. This tests the pipeline gate, not generator judgment.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [],
+      "supplied_context": []
     },
     {
       "question": "Who won the latest football championship?",
       "assessment": "correct_abstention",
       "reason": "No source cleared the threshold; generation was bypassed. This tests the pipeline gate, not generator judgment.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [],
+      "supplied_context": []
     },
     {
       "question": "What is the population of Tokyo in 2026?",
       "assessment": "correct_abstention",
       "reason": "No source cleared the threshold; generation was bypassed. This tests the pipeline gate, not generator judgment.",
-      "citation_markers_present": false
+      "citation_markers_present": false,
+      "reference_evidence": [],
+      "supplied_context": []
     }
   ]
 }

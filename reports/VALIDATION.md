@@ -63,21 +63,25 @@ Retrieval is working on these examples; generation is the immediate bottleneck. 
 
 ## Per-question audit
 
-| Question | Assessment | Generated answer |
-|---|---|---|
-| Does using RAG automatically fine-tune the generator? | unnecessary_abstention | I do not know |
-| What determines the size of token-based chunks? | partial | Token-based chunks are determined by the tokenizer. |
-| Why embed both queries and document chunks? | unnecessary_abstention | I do not know |
-| Why handle zero vectors separately during normalization? | unnecessary_abstention | I do not know |
-| Is IndexFlatIP exact or approximate? | unnecessary_abstention | I do not know |
-| What does the BM25 b parameter control? | correct | The BM25 b parameter controls document-length normalization. |
-| Does reciprocal rank fusion combine raw scores or ranks? | unnecessary_abstention | I do not know |
-| What does a lower MMR lambda emphasize? | incorrect | A lower lambda emphasizes relevance more. |
-| What does mean reciprocal rank measure? | incorrect | mean reciprocal rank measures the fraction of gold-relevant passages retrieved from a query. |
-| Does word overlap prove that an answer is factually supported? | unnecessary_abstention | I do not know |
-| When should embeddings be rebuilt? | unnecessary_abstention | I do not know |
-| Why rewrite a conversational follow-up? | unnecessary_abstention | I do not know |
-| What is the weather in Paris today? | correct_abstention | I do not know |
-| What is my account password? | correct_abstention | I do not know |
-| Who won the latest football championship? | correct_abstention | I do not know |
-| What is the population of Tokyo in 2026? | correct_abstention | I do not know |
+**Reference evidence** links to the gold passage used to assess the expected answer. **Supplied context** links to every passage actually included in the generator prompt, in prompt order. These are audit links added after evaluation, not citations produced by the model.
+
+Each link opens an [exact passage snapshot](EVIDENCE_PASSAGES.md), with a link onward to its original source file. Out-of-scope questions have no gold passage; in this run the retrieval gate also supplied no context and skipped generation.
+
+| Question | Assessment | Generated answer | Reference evidence | Supplied context |
+|---|---|---|---|---|
+| Does using RAG automatically fine-tune the generator? | unnecessary_abstention | I do not know | [rag::0](EVIDENCE_PASSAGES.md#passage-11) | [rag::0](EVIDENCE_PASSAGES.md#passage-11), [grounding::0](EVIDENCE_PASSAGES.md#passage-6), [chunking::0](EVIDENCE_PASSAGES.md#passage-2) |
+| What determines the size of token-based chunks? | partial | Token-based chunks are determined by the tokenizer. | [chunking::0](EVIDENCE_PASSAGES.md#passage-2) | [chunking::0](EVIDENCE_PASSAGES.md#passage-2), [persistence::0](EVIDENCE_PASSAGES.md#passage-10), [grounding::0](EVIDENCE_PASSAGES.md#passage-6) |
+| Why embed both queries and document chunks? | unnecessary_abstention | I do not know | [embeddings::0](EVIDENCE_PASSAGES.md#passage-4) | [persistence::0](EVIDENCE_PASSAGES.md#passage-10), [chunking::0](EVIDENCE_PASSAGES.md#passage-2), [embeddings::0](EVIDENCE_PASSAGES.md#passage-4) |
+| Why handle zero vectors separately during normalization? | unnecessary_abstention | I do not know | [cosine::0](EVIDENCE_PASSAGES.md#passage-3) | [cosine::0](EVIDENCE_PASSAGES.md#passage-3), [reranking::0](EVIDENCE_PASSAGES.md#passage-12), [embeddings::0](EVIDENCE_PASSAGES.md#passage-4) |
+| Is IndexFlatIP exact or approximate? | unnecessary_abstention | I do not know | [faiss::0](EVIDENCE_PASSAGES.md#passage-5) | [faiss::0](EVIDENCE_PASSAGES.md#passage-5), [hybrid::0](EVIDENCE_PASSAGES.md#passage-7), [reranking::0](EVIDENCE_PASSAGES.md#passage-12) |
+| What does the BM25 b parameter control? | correct | The BM25 b parameter controls document-length normalization. | [bm25::0](EVIDENCE_PASSAGES.md#passage-1) | [bm25::0](EVIDENCE_PASSAGES.md#passage-1), [reranking::0](EVIDENCE_PASSAGES.md#passage-12), [hybrid::0](EVIDENCE_PASSAGES.md#passage-7) |
+| Does reciprocal rank fusion combine raw scores or ranks? | unnecessary_abstention | I do not know | [hybrid::0](EVIDENCE_PASSAGES.md#passage-7) | [hybrid::0](EVIDENCE_PASSAGES.md#passage-7), [reranking::0](EVIDENCE_PASSAGES.md#passage-12), [metrics::0](EVIDENCE_PASSAGES.md#passage-9) |
+| What does a lower MMR lambda emphasize? | incorrect | A lower lambda emphasizes relevance more. | [reranking::0](EVIDENCE_PASSAGES.md#passage-12) | [reranking::0](EVIDENCE_PASSAGES.md#passage-12), [bm25::0](EVIDENCE_PASSAGES.md#passage-1), [metrics::0](EVIDENCE_PASSAGES.md#passage-9) |
+| What does mean reciprocal rank measure? | incorrect | mean reciprocal rank measures the fraction of gold-relevant passages retrieved from a query. | [metrics::0](EVIDENCE_PASSAGES.md#passage-9) | [metrics::0](EVIDENCE_PASSAGES.md#passage-9), [reranking::0](EVIDENCE_PASSAGES.md#passage-12), [hybrid::0](EVIDENCE_PASSAGES.md#passage-7) |
+| Does word overlap prove that an answer is factually supported? | unnecessary_abstention | I do not know | [grounding::0](EVIDENCE_PASSAGES.md#passage-6) | [grounding::0](EVIDENCE_PASSAGES.md#passage-6), [chunking::0](EVIDENCE_PASSAGES.md#passage-2), [embeddings::0](EVIDENCE_PASSAGES.md#passage-4) |
+| When should embeddings be rebuilt? | unnecessary_abstention | I do not know | [persistence::0](EVIDENCE_PASSAGES.md#passage-10) | [embeddings::0](EVIDENCE_PASSAGES.md#passage-4), [persistence::0](EVIDENCE_PASSAGES.md#passage-10), [memory::0](EVIDENCE_PASSAGES.md#passage-8) |
+| Why rewrite a conversational follow-up? | unnecessary_abstention | I do not know | [memory::0](EVIDENCE_PASSAGES.md#passage-8) | [memory::0](EVIDENCE_PASSAGES.md#passage-8), [persistence::0](EVIDENCE_PASSAGES.md#passage-10), [chunking::0](EVIDENCE_PASSAGES.md#passage-2) |
+| What is the weather in Paris today? | correct_abstention | I do not know | None | None |
+| What is my account password? | correct_abstention | I do not know | None | None |
+| Who won the latest football championship? | correct_abstention | I do not know | None | None |
+| What is the population of Tokyo in 2026? | correct_abstention | I do not know | None | None |
