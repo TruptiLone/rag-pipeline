@@ -263,3 +263,118 @@ The original function names remain available for reuse. Some utilities are inten
 49. `cache_query_embedding`
 50. `update_chat_memory`
 51. `rewrite_followup`
+
+## Directory reference: where everything lives
+
+The repository separates reusable code, source documents, evaluation labels, automated checks, and measured results.
+
+```text
+rag-pipeline/
+├── README.md
+├── model.py
+├── scaffold.py
+├── requirements.txt
+├── requirements-models.txt
+├── .gitignore
+├── data/
+│   ├── README.md
+│   ├── manifest.json
+│   ├── eval.json
+│   └── documents/
+│       ├── rag.txt
+│       ├── chunking.txt
+│       ├── embeddings.txt
+│       ├── cosine.txt
+│       ├── faiss.txt
+│       ├── bm25.txt
+│       ├── hybrid.txt
+│       ├── reranking.txt
+│       ├── metrics.txt
+│       ├── grounding.txt
+│       ├── persistence.txt
+│       └── memory.txt
+├── tests/
+│   └── test_pipeline.py
+├── reports/
+│   └── retrieval_test_bm25.json
+├── docs/
+│   └── index.html
+└── artifacts/                  # Created by a model-backed run; Git-ignored
+```
+
+### Application code and configuration
+
+| File | Responsibility |
+|---|---|
+| `README.md` | Project purpose, workflow, measured results, limitations, and setup instructions |
+| `model.py` | Reusable functions for ingestion, chunking, embeddings, retrieval, generation, and evaluation; despite its name, this is more than a model definition |
+| `scaffold.py` | Command-line entry point that connects the helpers, loads the corpus, runs evaluation, and optionally generates an answer |
+| `requirements.txt` | NumPy dependency for the lightweight retrieval workflow |
+| `requirements-models.txt` | Additional dependencies for embeddings, FAISS, and local generation, including PyTorch and Transformers |
+| `.gitignore` | Excludes generated artifacts, caches, virtual environments, and Python bytecode from version control |
+| `docs/index.html` | Pre-existing static project page; separate from the Python pipeline and not a live question-answering frontend. The root README describes the updated implementation. |
+
+To follow execution, start with `main()` in `scaffold.py`, then inspect the functions it calls in `model.py`.
+
+### `data/`: source knowledge and evaluation labels
+
+The source documents are the information the assistant searches. Evaluation questions are the examples used to assess that search; they are not added to the searchable corpus.
+
+| Path | Contents and purpose |
+|---|---|
+| `data/documents/` | Twelve project-authored UTF-8 notes about RAG concepts; no webpages are scraped for this demo |
+| `data/manifest.json` | Catalog of document titles, relative file paths, source IDs, and provenance; used to locate and identify documents |
+| `data/eval.json` | Questions, reference answers, relevant chunk IDs, development/test splits, and answerability labels |
+| `data/README.md` | Corpus provenance and limitations of the synthetic evaluation set |
+
+For example, `data/documents/cosine.txt` has source ID `cosine`. Its first chunk is `cosine::0`, and evaluation questions can name that ID as gold-relevant evidence. This relationship lets the evaluator compare retrieved passages against known supporting passages. Changing documents or chunking can change this relationship, so the labels must be reviewed after such changes.
+
+### `tests/`: software correctness
+
+`tests/test_pipeline.py` contains 13 checks covering text preservation, HTML extraction, chunk boundaries, source IDs, evaluation-label validity, metric calculations, normalization, persistence, caching, conversation memory, and the answer path. The FAISS check runs when its optional dependency is installed; otherwise it is skipped.
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+Tests check that the code behaves as intended. Retrieval evaluation measures whether it finds useful evidence. Answer evaluation checks whether generated responses follow that evidence. Passing software tests does not establish answer quality; the generation-path tests use test doubles.
+
+### `reports/`: measured results
+
+`reports/retrieval_test_bm25.json` is the committed BM25 experiment report. It records aggregate metrics, retrieved and relevant IDs per question, mean query time, a corpus checksum, and Python/NumPy versions.
+
+The CLI writes files according to the selected run:
+
+- `retrieval_test_bm25.json` or `retrieval_dev_bm25.json`: lexical-only evaluation.
+- `retrieval_test_all.json` or `retrieval_dev_all.json`: BM25, dense, and hybrid comparisons when embeddings are enabled.
+- `answer_example.json`: one generated answer with its query and source records when `--generate` is used.
+
+Only reports actually generated and inspected should be used to support project claims. These filenames describe possible outputs; they do not imply that every experiment has already run.
+
+### `artifacts/`: reusable generated data
+
+A model-backed run creates this folder locally:
+
+```text
+artifacts/
+├── embeddings.npy    # Chunk vectors, one vector per row
+├── chunks.json       # Corresponding passage text and metadata
+├── corpus.faiss      # Persisted vector-search index
+└── config.json       # Embedding model identifier and chunking settings
+```
+
+Row `i` in the embedding matrix must correspond to chunk `i` in the metadata and index. Misalignment can return a mathematically similar vector but display the wrong passage. The tests check persistence, and the model-backed CLI validates the reloaded FAISS index against NumPy.
+
+Artifacts are Git-ignored because they can be regenerated. Downloaded pretrained model weights are normally stored separately in the Hugging Face cache. Persisting an index is implemented; the current CLI still rebuilds it on each model-backed run rather than providing a persistent serving process.
+
+### How a run connects the folders
+
+Running `python scaffold.py`:
+
+1. Reads `data/manifest.json` to locate the source documents.
+2. Loads `data/documents/`, then normalizes, chunks, and attaches metadata using `model.py`.
+3. Reads the selected answerable questions and gold IDs from `data/eval.json`.
+4. Runs BM25 retrieval and calculates hit rate, recall, and MRR.
+5. Saves the experiment in `reports/`.
+
+Adding `--dense` loads the embedding model, builds and saves `artifacts/`, checks the FAISS round trip, and evaluates dense/hybrid retrieval as well. Adding `--generate` enables those steps and also loads the generator to answer one question. No model training occurs in these commands.
